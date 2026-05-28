@@ -13,13 +13,16 @@ async function obtenerDatosMundial() {
         const textoCSV = await respuesta.text();
         const jugadores = parsearCSV(textoCSV);
         
+        // El cerebro deduce en qué estado está cada mánager antes de pintar
+        asignarEstadosLogicos(jugadores);
+        
         renderizarClasificacion(jugadores);
         renderizarTorneo(jugadores.slice(0, 8)); 
         calcularPremios(jugadores);
         
     } catch (error) {
         console.error(error);
-        document.getElementById("cuerpo-tabla").innerHTML = `<tr><td colspan="3" style="color:red; text-align:center;">Error de Base de Datos. Revisa las 10 columnas.</td></tr>`;
+        document.getElementById("cuerpo-tabla").innerHTML = `<tr><td colspan="4" style="color:red; text-align:center;">Error de Base de Datos. Revisa las 10 columnas exactas.</td></tr>`;
     }
 }
 
@@ -33,7 +36,6 @@ function parsearCSV(texto) {
         
         const col = linea.split(",");
         
-        // Mapeo riguroso adaptado a 10 columnas (Columna 9 = Logo)
         resultado.push({
             nombre: col[0]?.replace(/"/g, '').trim() || "???",
             equipo: col[1]?.replace(/"/g, '').trim() || "???",
@@ -52,6 +54,114 @@ function parsearCSV(texto) {
     return resultado.map((jugador, index) => { return { ...jugador, seed: index + 1 }; });
 }
 
+/* =========================================================
+   NÚCLEO DE ESTADOS: DEDUCE LA SITUACIÓN EN EL TORNEO
+   ========================================================= */
+function asignarEstadosLogicos(jugadores) {
+    // 1. Fase de Grupos
+    jugadores.forEach((j, i) => {
+        if (i >= 8) {
+            marcarEstado(j, "❌ Eliminado", "#ff4444", "rgba(255, 68, 68, 0.1)");
+        } else {
+            marcarEstado(j, "⏳ En Cuartos", "var(--primary)", "rgba(75, 8, 161, 0.1)");
+        }
+    });
+
+    const top8 = jugadores.slice(0, 8);
+    if (top8.length < 8) return;
+
+    // 2. Evaluamos Cuartos de Final
+    const crucesQ = [[0,7], [3,4], [1,6], [2,5]];
+    const semis = [];
+
+    crucesQ.forEach(cruce => {
+        const jA = top8[cruce[0]], jB = top8[cruce[1]];
+        const totA = jA.ptsDieciseisavos + jA.ptsOctavos;
+        const totB = jB.ptsDieciseisavos + jB.ptsOctavos;
+
+        if (totA === 0 && totB === 0) return; // No se ha jugado aún
+
+        let ganaA = totA > totB || (totA === totB && totA > 0 && jA.seed < jB.seed);
+        let ganaB = totB > totA || (totA === totB && totB > 0 && jB.seed < jA.seed);
+
+        if (ganaA) {
+            semis.push(jA);
+            marcarEstado(jB, "Caída en Cuartos", "#888", "#eeeeee");
+            marcarEstado(jA, "🔥 En Semis", "var(--primary)", "rgba(75, 8, 161, 0.1)");
+        } else if (ganaB) {
+            semis.push(jB);
+            marcarEstado(jA, "Caída en Cuartos", "#888", "#eeeeee");
+            marcarEstado(jB, "🔥 En Semis", "var(--primary)", "rgba(75, 8, 161, 0.1)");
+        }
+    });
+
+    // 3. Evaluamos Semifinales
+    if (semis.length === 4) {
+        const crucesS = [[semis[0], semis[1]], [semis[2], semis[3]]];
+        const finalistas = [], terceros = [];
+
+        crucesS.forEach(cruce => {
+            const jA = cruce[0], jB = cruce[1];
+            const totA = jA.ptsCuartos + jA.ptsSemis;
+            const totB = jB.ptsCuartos + jB.ptsSemis;
+
+            if (totA === 0 && totB === 0) return;
+
+            let ganaA = totA > totB || (totA === totB && totA > 0 && jA.seed < jB.seed);
+            let ganaB = totB > totA || (totA === totB && totB > 0 && jB.seed < jA.seed);
+
+            if (ganaA) {
+                finalistas.push(jA); terceros.push(jB);
+                marcarEstado(jA, "⭐ Finalista", "var(--primary)", "rgba(75, 8, 161, 0.1)");
+                marcarEstado(jB, "Lucha por 3º", "#cd7f32", "rgba(205, 127, 50, 0.1)");
+            } else if (ganaB) {
+                finalistas.push(jB); terceros.push(jA);
+                marcarEstado(jB, "⭐ Finalista", "var(--primary)", "rgba(75, 8, 161, 0.1)");
+                marcarEstado(jA, "Lucha por 3º", "#cd7f32", "rgba(205, 127, 50, 0.1)");
+            }
+        });
+
+        // 4. Evaluamos la Final y el 3º Puesto
+        if (finalistas.length === 2) {
+            const fA = finalistas[0], fB = finalistas[1];
+            if (fA.ptsFinal > 0 || fB.ptsFinal > 0) {
+                let ganaA = fA.ptsFinal > fB.ptsFinal || (fA.ptsFinal === fB.ptsFinal && fA.ptsFinal > 0 && fA.seed < fB.seed);
+                if (ganaA) {
+                    marcarEstado(fA, "🏆 CAMPEÓN", "#b8860b", "rgba(255, 215, 0, 0.2)");
+                    marcarEstado(fB, "🥈 Subcampeón", "#666666", "rgba(192, 192, 192, 0.3)");
+                } else {
+                    marcarEstado(fB, "🏆 CAMPEÓN", "#b8860b", "rgba(255, 215, 0, 0.2)");
+                    marcarEstado(fA, "🥈 Subcampeón", "#666666", "rgba(192, 192, 192, 0.3)");
+                }
+            }
+        }
+
+        if (terceros.length === 2) {
+            const tA = terceros[0], tB = terceros[1];
+            if (tA.ptsTercero > 0 || tB.ptsTercero > 0) {
+                let ganaA = tA.ptsTercero > tB.ptsTercero || (tA.ptsTercero === tB.ptsTercero && tA.ptsTercero > 0 && tA.seed < tB.seed);
+                if (ganaA) {
+                    marcarEstado(tA, "🥉 3º Puesto", "#8b4513", "rgba(205, 127, 50, 0.2)");
+                    marcarEstado(tB, "4º Puesto", "#888888", "#eeeeee");
+                } else {
+                    marcarEstado(tB, "🥉 3º Puesto", "#8b4513", "rgba(205, 127, 50, 0.2)");
+                    marcarEstado(tA, "4º Puesto", "#888888", "#eeeeee");
+                }
+            }
+        }
+    }
+}
+
+// Utilidad para no repetir código visual
+function marcarEstado(j, texto, color, fondo) {
+    j.estadoStr = texto;
+    j.estadoColor = color;
+    j.estadoBg = fondo;
+}
+
+/* =========================================================
+   RENDERIZADOS VISUALES
+   ========================================================= */
 function renderizarClasificacion(jugadores) {
     const tbody = document.getElementById("cuerpo-tabla");
     tbody.innerHTML = "";
@@ -73,6 +183,11 @@ function renderizarClasificacion(jugadores) {
                 </div>
             </td>
             <td><strong>${jugador.ptsLiguilla} pts</strong></td>
+            <td>
+                <span class="badge-estado" style="color: ${jugador.estadoColor}; background-color: ${jugador.estadoBg};">
+                    ${jugador.estadoStr}
+                </span>
+            </td>
         `;
         tbody.appendChild(tr);
     });
