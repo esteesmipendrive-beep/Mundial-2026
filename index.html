@@ -10,7 +10,7 @@
     <header>
         <h1>🏆 Nuestra Liga Fantasy - Mundial</h1>
         <nav>
-            <a href="#clasificacion">Clasificación Liguilla</a>
+            <a href="#clasificacion">Liguilla</a>
             <a href="#torneo">Fase Final</a>
         </nav>
     </header>
@@ -18,7 +18,7 @@
     <main>
         <section id="clasificacion">
             <h2>Clasificación Final (Fase de Grupos)</h2>
-            <p><em>Los 8 primeros clasificados avanzan al torneo eliminatorio. Las posiciones se bloquean al terminar la Jornada 3.</em></p>
+            <p><em>Los 8 mejores pasan a eliminatorias. Las posiciones (Seed) se bloquean al terminar la Jornada 3 y definen los desempates.</em></p>
             <table id="tabla-clasificacion">
                 <thead>
                     <tr>
@@ -29,13 +29,17 @@
                     </tr>
                 </thead>
                 <tbody id="cuerpo-tabla">
-                    <tr><td colspan="4" style="text-align:center;">Cargando base de datos...</td></tr>
+                    <tr>
+                        <td colspan="4" style="text-align:center;">Cargando base de datos desde Google Sheets...</td>
+                    </tr>
                 </tbody>
             </table>
         </section>
 
         <section id="torneo">
             <h2>Cuadro del Torneo Eliminatorio</h2>
+            <p><em>Nuestros Cuartos (Dieciseisavos + Octavos) y Nuestras Semis (Cuartos + Semis reales) se juegan a doble sumatorio. Final y Tercer puesto a partido único. En caso de empate, avanza el mejor posicionado de la Liguilla (L).</em></p>
+            
             <div class="bracket" id="contenedor-torneo">
                 </div>
         </section>
