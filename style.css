@@ -1,8 +1,6 @@
 /* =========================================
    VARIABLES Y ESTÉTICA (FIFA 2026 / FANTASY)
    ========================================= */
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700;900&display=swap');
-
 :root {
     --bg-card: #ffffff;
     --text-main: #111111;
@@ -15,6 +13,7 @@
     --fifa-green: #00ff88;
     
     /* Acentos */
+    --gold: #ffd700;
     --border-soft: #eaedf2;
 }
 
@@ -31,7 +30,7 @@ body::before {
 }
 
 body {
-    font-family: 'Outfit', sans-serif;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     color: var(--text-main);
     margin: 0;
     padding: 0;
@@ -131,7 +130,7 @@ h2 {
 }
 
 /* =========================================
-   TABLA (VERDE CLASIFICADOS / ROJO ELIMINADOS)
+   TABLA CLASIFICACIÓN (ZONAS PASTELES VERDE/ROJO)
    ========================================= */
 table { 
     width: 100%; 
@@ -140,6 +139,8 @@ table {
     margin-top: 1rem; 
 }
 
+th, td { padding: 1rem; text-align: left; }
+
 th { 
     background-color: transparent; 
     color: var(--text-muted); 
@@ -147,131 +148,114 @@ th {
     text-transform: uppercase;
     font-size: 0.8rem;
     letter-spacing: 1px;
-    padding: 0 1rem 0.5rem 1rem;
-    border-bottom: 2px solid var(--border-soft);
 }
 
-td { padding: 1rem; background-color: white; }
+td { background-color: white; border-top: 1px solid var(--border-soft); border-bottom: 1px solid var(--border-soft); }
 
-tr td:first-child { border-radius: 12px 0 0 12px; }
-tr td:last-child { border-radius: 0 12px 12px 0; }
+tr td:first-child { border-left: 1px solid var(--border-soft); border-radius: 12px 0 0 12px; }
+tr td:last-child { border-right: 1px solid var(--border-soft); border-radius: 0 12px 12px 0; }
 
-/* Zonas de la tabla coloreadas en tonos pastel */
-.zona-clasificacion td { background: rgba(0, 255, 136, 0.1); border-top: 1px solid rgba(0, 255, 136, 0.2); border-bottom: 1px solid rgba(0, 255, 136, 0.2);}
+/* Zonas de la tabla coloreadas en tonos pastel suave */
+.zona-clasificacion td { background: rgba(0, 255, 136, 0.08); border-top: 1px solid rgba(0, 255, 136, 0.2); border-bottom: 1px solid rgba(0, 255, 136, 0.2);}
 .zona-clasificacion td:first-child { border-left: 5px solid var(--fifa-green); }
 
 .zona-eliminacion td { background: rgba(255, 0, 85, 0.04); border-top: 1px solid rgba(255, 0, 85, 0.1); border-bottom: 1px solid rgba(255, 0, 85, 0.1);}
-.zona-eliminacion td:first-child { border-left: 5px solid var(--fifa-magenta); filter: grayscale(50%); opacity: 0.8;}
+.zona-eliminacion td:first-child { border-left: 5px solid var(--fifa-magenta); }
 
-.badge-estado {
-    display: inline-block;
-    padding: 0.4rem 0.8rem;
-    border-radius: 20px;
-    font-size: 0.75rem;
-    font-weight: 900;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.team-info { display: flex; align-items: center; gap: 15px; }
-
-.escudo-tabla {
-    width: 48px; height: 48px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 3px solid var(--border-soft);
-    background-color: white;
-}
+.team-info { display: flex; align-items: center; gap: 12px; }
+.escudo-tabla { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; border: 3px solid white; background: white; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
 
 /* =========================================
-   ÁRBOL CONVERGENTE (ESPEJO)
+   ÁRBOL DEL TORNEO (ESTILO ESPEJO - CONVERGENTE)
    ========================================= */
-.bracket-symmetrical {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+.bracket-simetrico {
+    display: grid;
+    grid-template-columns: 1fr 180px 1fr; /* QF-SF Izq | Final | SF-QF Der */
     gap: 1rem;
-    overflow-x: auto;
-    padding: 2rem 0;
+    align-items: center;
+    padding: 1rem 0;
+    position: relative;
+    overflow-x: hidden;
 }
 
-.pathway {
-    display: flex;
+/* Columna de cruces QF+SF agrupados por Pathway */
+.pathway-col {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(180px, 1fr));
     gap: 1.5rem;
     align-items: center;
 }
 
-.bracket-col {
+.bracket-round {
     display: flex;
     flex-direction: column;
     justify-content: space-around;
     gap: 1.5rem;
+    height: 100%;
 }
 
-.sf-col { justify-content: center; height: 100%; gap: 6rem;} /* Separa más las semis */
-
-.pathway-center {
+.final-col {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 1.5rem;
-    min-width: 220px;
-    padding: 0 1rem;
 }
 
-.round-badge {
-    background: var(--fifa-purple);
-    color: white;
-    font-weight: 900;
-    padding: 0.4rem 1.5rem;
-    border-radius: 30px;
+.matchup-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.round-header {
+    background: rgba(75, 8, 161, 0.1);
+    color: var(--fifa-purple);
+    font-weight: 700;
+    padding: 0.4rem;
+    border-radius: 8px;
     font-size: 0.8rem;
-    letter-spacing: 2px;
-    box-shadow: 0 4px 10px rgba(75, 8, 161, 0.3);
+    text-transform: uppercase;
+    text-align: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
 }
 
-/* Tarjetas de Cruce estilo FIFA */
-.matchup-card {
+.team-card {
     background: white;
-    border-radius: 12px;
-    width: 220px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
     border: 1px solid var(--border-soft);
-    overflow: hidden;
-    transition: transform 0.2s;
-}
-
-.matchup-card:hover { transform: scale(1.03); box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
-
-.team-row {
+    border-radius: 10px;
+    padding: 0.6rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0.6rem 1rem;
-    border-bottom: 1px solid var(--border-soft);
+    gap: 10px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.04);
 }
-.team-row:last-child { border-bottom: none; }
 
-.team-row.winner { background: rgba(0, 255, 136, 0.15); border-left: 4px solid var(--fifa-green); }
+.team-card.winner { background: rgba(0, 255, 136, 0.1); border-left: 4px solid var(--fifa-green); font-weight: 700; }
+.team-card.eliminated { opacity: 0.7; filter: grayscale(50%); border-left: 4px solid var(--fifa-magenta);}
 
-.team-name-container { display: flex; align-items: center; gap: 10px; }
-.t-name { font-weight: 700; font-size: 0.9rem; }
-
-.pts-badge {
-    font-weight: 900;
-    color: var(--fifa-purple);
-    font-size: 1.15rem;
-}
+.team-name-badge { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; max-width: 130px;}
+.t-name-label { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
 .escudo-bracket {
-    width: 26px; height: 26px;
+    width: 24px; height: 24px;
     border-radius: 50%;
     object-fit: cover;
     border: 1px solid var(--border-soft);
 }
 
+/* Insignia de puntos visible y clara */
+.points-badge {
+    font-weight: 900;
+    color: var(--fifa-purple);
+    background: rgba(75, 8, 161, 0.1);
+    padding: 0.2rem 0.5rem;
+    border-radius: 15px;
+    font-size: 0.9rem;
+}
+
 /* =========================================
-   PODIO ESPECTACULAR
+   PODIO 3D ESPECTACULAR Y PREMIOS
    ========================================= */
 .podio-container {
     display: flex;
@@ -290,25 +274,20 @@ tr td:last-child { border-radius: 0 12px 12px 0; }
     justify-content: flex-end;
     align-items: center;
     color: white;
+    font-weight: bold;
     border-radius: 16px 16px 0 0;
     text-align: center;
     padding: 1.5rem 1rem;
-    width: 140px;
+    width: 130px;
     position: relative;
     transition: transform 0.3s ease;
 }
 
 .escalon:hover { transform: translateY(-15px); }
 
-.escalon .nombre { 
-    font-size: 1.2rem; 
-    font-weight: 900;
-    margin-bottom: 0.5rem; 
-    text-shadow: 0 2px 5px rgba(0,0,0,0.4); 
-    letter-spacing: 0.5px;
-}
+.escalon .nombre { font-size: 1.15rem; font-weight: 900; margin-bottom: 0.5rem; text-shadow: 0 2px 5px rgba(0,0,0,0.4); }
 
-.medal-tag {
+.tag-medal {
     background: rgba(0,0,0,0.3);
     padding: 0.2rem 1rem;
     border-radius: 20px;
@@ -347,9 +326,7 @@ tr td:last-child { border-radius: 0 12px 12px 0; }
     box-shadow: 0 8px 20px rgba(0,0,0,0.4);
 }
 
-/* =========================================
-   PREMIOS (GRID)
-   ========================================= */
+/* Grid de Premios */
 .premios-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
@@ -364,24 +341,18 @@ tr td:last-child { border-radius: 0 12px 12px 0; }
     border-radius: 16px;
     text-align: center;
     box-shadow: 0 8px 24px rgba(0,0,0,0.05);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    transition: transform 0.3s ease;
 }
 
 .premio-card:hover { transform: translateY(-5px); box-shadow: 0 12px 32px rgba(0,0,0,0.1); }
 
-.vip-card {
+/* Estilo VIP Exclusivo para el Campeón General */
+.premio-card:nth-child(2) {
     border-top: 5px solid var(--fifa-cyan);
     background: linear-gradient(to bottom, #f0fbff, #ffffff);
     box-shadow: 0 10px 30px rgba(0, 229, 255, 0.15);
 }
 
-.premio-card h3 { 
-    margin: 0 0 1rem 0; 
-    color: var(--fifa-purple); 
-    font-size: 1.1rem; 
-    font-weight: 900;
-    text-transform: uppercase;
-}
-
+.premio-card h3 { margin: 0 0 1rem 0; color: var(--fifa-purple); font-size: 1.1rem; font-weight: 900; text-transform: uppercase;}
 .premio-card p { margin: 0; font-size: 1.4rem; font-weight: 900; color: var(--text-main); }
-.premio-card small { color: var(--text-muted); font-size: 0.9rem; display: block; margin-top: 0.5rem; font-weight: 500; }
+.premio-card small { color: var(--text-muted); font-size: 0.9rem; display: block; margin-top: 0.5rem; font-weight: 500;}
