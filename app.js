@@ -419,3 +419,4 @@ function calcularPremios(jugadores) {
         </div>
     `;
 }
+
