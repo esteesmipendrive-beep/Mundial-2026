@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fantasy Mundial 2026</title>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -12,7 +11,7 @@
         <img src="logo.png" alt="Mundial 2026" class="logo-oficial" onerror="this.style.display='none'">
         <h1>Liga Fantasy Mundial</h1>
         <nav>
-            <a href="#clasificacion">Clasificación General</a>
+            <a href="#clasificacion">Liguilla</a>
             <a href="#torneo">Fase Final</a>
             <a href="#premios">Premios y Podio</a>
         </nav>
@@ -20,35 +19,29 @@
 
     <main>
         <section id="clasificacion">
-            <h2>Clasificación General Absoluta</h2>
-            <p style="text-align: center; margin-bottom: 2rem; color: var(--text-muted);">
-                <em>El líder de esta tabla al finalizar el Mundial recuperará su inversión, independientemente de lo que ocurra en las eliminatorias.</em>
-            </p>
+            <h2>Clasificación Final (Fase de Grupos)</h2>
             <table id="tabla-clasificacion">
                 <thead>
                     <tr>
                         <th>Pos</th>
                         <th>Mánager / Equipo</th>
-                        <th>Estado Torneo</th>
-                        <th>Pts Liguilla</th>
-                        <th>PTS TOTALES</th>
+                        <th>Puntos Liguilla</th>
                     </tr>
                 </thead>
                 <tbody id="cuerpo-tabla">
-                    <tr><td colspan="5" style="text-align:center;">Cargando base de datos desde Google Sheets...</td></tr>
+                    <tr><td colspan="3" style="text-align:center;">Cargando base de datos...</td></tr>
                 </tbody>
             </table>
         </section>
 
         <section id="torneo">
             <h2>Cuadro del Torneo</h2>
-            <div class="bracket" id="contenedor-torneo">
+            <div id="contenedor-torneo">
                 </div>
         </section>
 
         <section id="premios">
             <h2>Palmarés y Podio Final</h2>
-            
             <div class="podio-container" id="podio-final">
                 </div>
             
