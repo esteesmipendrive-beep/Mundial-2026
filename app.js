@@ -13,16 +13,18 @@ async function obtenerDatosMundial() {
         const textoCSV = await respuesta.text();
         const jugadores = parsearCSV(textoCSV);
         
-        // El cerebro deduce en qué estado está cada mánager antes de pintar
         asignarEstadosLogicos(jugadores);
-        
         renderizarClasificacion(jugadores);
-        renderizarTorneo(jugadores.slice(0, 8)); 
+        
+        // Blindaje: Extraemos estrictamente a los 8 con mejor "Seed" (liguilla) y los enviamos al torneo
+        const clasificadosTorneo = jugadores.filter(j => j.seed <= 8).sort((a, b) => a.seed - b.seed);
+        renderizarTorneo(clasificadosTorneo); 
+        
         calcularPremios(jugadores);
         
     } catch (error) {
         console.error(error);
-        document.getElementById("cuerpo-tabla").innerHTML = `<tr><td colspan="4" style="color:red; text-align:center;">Error de Base de Datos. Revisa las 10 columnas exactas.</td></tr>`;
+        document.getElementById("cuerpo-tabla").innerHTML = `<tr><td colspan="5" style="color:red; text-align:center;">Error de Base de Datos. Revisa las 10 columnas exactas del Excel.</td></tr>`;
     }
 }
 
@@ -36,41 +38,54 @@ function parsearCSV(texto) {
         
         const col = linea.split(",");
         
+        const ptsLiguilla = parseInt(col[2]) || 0;
+        const ptsDieciseisavos = parseInt(col[3]) || 0;
+        const ptsOctavos = parseInt(col[4]) || 0;
+        const ptsCuartos = parseInt(col[5]) || 0;
+        const ptsSemis = parseInt(col[6]) || 0;
+        const ptsFinal = parseInt(col[7]) || 0;
+        const ptsTercero = parseInt(col[8]) || 0;
+
+        const ptsTotales = ptsLiguilla + ptsDieciseisavos + ptsOctavos + ptsCuartos + ptsSemis + ptsFinal + ptsTercero;
+        
         resultado.push({
             nombre: col[0]?.replace(/"/g, '').trim() || "???",
             equipo: col[1]?.replace(/"/g, '').trim() || "???",
-            ptsLiguilla: parseInt(col[2]) || 0,
-            ptsDieciseisavos: parseInt(col[3]) || 0,
-            ptsOctavos: parseInt(col[4]) || 0,
-            ptsCuartos: parseInt(col[5]) || 0,
-            ptsSemis: parseInt(col[6]) || 0,
-            ptsFinal: parseInt(col[7]) || 0,
-            ptsTercero: parseInt(col[8]) || 0,
+            ptsLiguilla: ptsLiguilla,
+            ptsDieciseisavos: ptsDieciseisavos,
+            ptsOctavos: ptsOctavos,
+            ptsCuartos: ptsCuartos,
+            ptsSemis: ptsSemis,
+            ptsFinal: ptsFinal,
+            ptsTercero: ptsTercero,
+            ptsTotales: ptsTotales,
             logo: col[9]?.replace(/"/g, '').trim() || FALLBACK_IMG
         });
     }
     
+    // PASO 1: Ordenar temporalmente por Liguilla para asignar los "Seeds" (1 al 16)
     resultado.sort((a, b) => b.ptsLiguilla - a.ptsLiguilla);
-    return resultado.map((jugador, index) => { return { ...jugador, seed: index + 1 }; });
+    resultado.forEach((j, index) => j.seed = index + 1);
+
+    // PASO 2: Reordenar la matriz completa por Puntos Totales para la tabla visual
+    resultado.sort((a, b) => b.ptsTotales - a.ptsTotales);
+
+    return resultado;
 }
 
-/* =========================================================
-   NÚCLEO DE ESTADOS: DEDUCE LA SITUACIÓN EN EL TORNEO
-   ========================================================= */
 function asignarEstadosLogicos(jugadores) {
-    // 1. Fase de Grupos
-    jugadores.forEach((j, i) => {
-        if (i >= 8) {
+    jugadores.forEach(j => {
+        if (j.seed > 8) {
             marcarEstado(j, "❌ Eliminado", "#ff4444", "rgba(255, 68, 68, 0.1)");
         } else {
             marcarEstado(j, "⏳ En Cuartos", "var(--primary)", "rgba(75, 8, 161, 0.1)");
         }
     });
 
-    const top8 = jugadores.slice(0, 8);
+    // Para la lógica de cruces, necesitamos la matriz original ordenada por Seed
+    const top8 = jugadores.filter(j => j.seed <= 8).sort((a,b) => a.seed - b.seed);
     if (top8.length < 8) return;
 
-    // 2. Evaluamos Cuartos de Final
     const crucesQ = [[0,7], [3,4], [1,6], [2,5]];
     const semis = [];
 
@@ -79,7 +94,7 @@ function asignarEstadosLogicos(jugadores) {
         const totA = jA.ptsDieciseisavos + jA.ptsOctavos;
         const totB = jB.ptsDieciseisavos + jB.ptsOctavos;
 
-        if (totA === 0 && totB === 0) return; // No se ha jugado aún
+        if (totA === 0 && totB === 0) return;
 
         let ganaA = totA > totB || (totA === totB && totA > 0 && jA.seed < jB.seed);
         let ganaB = totB > totA || (totA === totB && totB > 0 && jB.seed < jA.seed);
@@ -95,7 +110,6 @@ function asignarEstadosLogicos(jugadores) {
         }
     });
 
-    // 3. Evaluamos Semifinales
     if (semis.length === 4) {
         const crucesS = [[semis[0], semis[1]], [semis[2], semis[3]]];
         const finalistas = [], terceros = [];
@@ -121,7 +135,6 @@ function asignarEstadosLogicos(jugadores) {
             }
         });
 
-        // 4. Evaluamos la Final y el 3º Puesto
         if (finalistas.length === 2) {
             const fA = finalistas[0], fB = finalistas[1];
             if (fA.ptsFinal > 0 || fB.ptsFinal > 0) {
@@ -152,16 +165,12 @@ function asignarEstadosLogicos(jugadores) {
     }
 }
 
-// Utilidad para no repetir código visual
 function marcarEstado(j, texto, color, fondo) {
     j.estadoStr = texto;
     j.estadoColor = color;
     j.estadoBg = fondo;
 }
 
-/* =========================================================
-   RENDERIZADOS VISUALES
-   ========================================================= */
 function renderizarClasificacion(jugadores) {
     const tbody = document.getElementById("cuerpo-tabla");
     tbody.innerHTML = "";
@@ -169,25 +178,28 @@ function renderizarClasificacion(jugadores) {
 
     jugadores.forEach((jugador, index) => {
         const tr = document.createElement("tr");
-        if (index < 8) tr.className = "zona-clasificacion"; 
         
+        // Destacar al líder de la General con el color primario
+        if (index === 0) tr.style.backgroundColor = "rgba(75, 8, 161, 0.05)"; 
+
         tr.innerHTML = `
-            <td><strong>${jugador.seed}</strong></td>
+            <td><strong>${index + 1}</strong></td>
             <td>
                 <div class="team-info">
                     <img src="${jugador.logo}" class="escudo-tabla" onerror="this.src='${FALLBACK_IMG}'" alt="Escudo">
                     <div>
                         <strong>${jugador.nombre}</strong><br>
-                        <small style="color:#666;">${jugador.equipo}</small>
+                        <small style="color:#666;">${jugador.equipo} (Seed #${jugador.seed})</small>
                     </div>
                 </div>
             </td>
-            <td><strong>${jugador.ptsLiguilla} pts</strong></td>
             <td>
                 <span class="badge-estado" style="color: ${jugador.estadoColor}; background-color: ${jugador.estadoBg};">
                     ${jugador.estadoStr}
                 </span>
             </td>
+            <td style="color:#888;">${jugador.ptsLiguilla} pts</td>
+            <td><strong style="font-size: 1.1rem; color: var(--primary);">${jugador.ptsTotales} pts</strong></td>
         `;
         tbody.appendChild(tr);
     });
@@ -338,8 +350,12 @@ function renderizarPodio(oro, plata, bronce) {
 
 function calcularPremios(jugadores) {
     const contenedor = document.getElementById("contenedor-premios");
-    const liderLiguilla = jugadores[0]; 
-    const farolillo = jugadores[jugadores.length - 1]; 
+    
+    // El líder de la General Absoluta es el índice 0, porque la matriz ya está ordenada por Puntos Totales
+    const liderGeneral = jugadores[0]; 
+
+    // Para buscar al Farolillo Rojo de la Liguilla, buscamos el que tiene el Seed más alto
+    let farolillo = jugadores.reduce((prev, current) => (prev.seed > current.seed) ? prev : current);
 
     let bombazo = { nombre: "---", puntos: 0, jornada: "" };
     let limon = { nombre: "---", puntos: 9999, jornada: "" };
@@ -365,9 +381,9 @@ function calcularPremios(jugadores) {
             <small>${bombazo.puntos > 0 ? bombazo.puntos + ' pts en ' + bombazo.jornada : 'Sin datos aún'}</small>
         </div>
         <div class="premio-card">
-            <h3>📈 La Regularidad</h3>
-            <p>${liderLiguilla.nombre}</p>
-            <small>Líder Liguilla (${liderLiguilla.ptsLiguilla} pts)</small>
+            <h3>🏆 Campeón General</h3>
+            <p>${liderGeneral.nombre}</p>
+            <small>Líder Absoluto (${liderGeneral.ptsTotales} pts)</small>
         </div>
         <div class="premio-card" style="border-top-color: #ffaa00;">
             <h3>🍋 Premio Limón</h3>
@@ -377,7 +393,7 @@ function calcularPremios(jugadores) {
         <div class="premio-card" style="border-top-color: #888;">
             <h3>🏮 Farolillo Rojo</h3>
             <p>${farolillo.nombre}</p>
-            <small>Último Liguilla (${farolillo.ptsLiguilla} pts)</small>
+            <small>Último en Liguilla (${farolillo.ptsLiguilla} pts)</small>
         </div>
     `;
 }
