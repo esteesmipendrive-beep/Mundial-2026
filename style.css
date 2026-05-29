@@ -1,406 +1,387 @@
 /* =========================================
    VARIABLES Y ESTÉTICA (FIFA 2026 / FANTASY)
    ========================================= */
-   @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700;900&display=swap');
 
-   :root {
-       --bg-body: #f0f2f5;
-       --bg-card: #ffffff;
-       --text-main: #111111;
-       --text-muted: #666666;
-       
-       /* Paleta Oficial 2026 Expandida */
-       --fifa-purple: #4b08a1;
-       --fifa-purple-dark: #2a0066;
-       --fifa-green: #00ff88;
-       --fifa-magenta: #ff0055;
-       --fifa-cyan: #00e5ff;
-       
-       /* Acentos */
-       --gold: #ffd700;
-       --silver: #e0e0e0;
-       --bronze: #cd7f32;
-       --border-soft: #eaedf2;
-   }
-   
-   body {
-       font-family: 'Outfit', sans-serif;
-       background-color: var(--bg-body);
-       color: var(--text-main);
-       margin: 0;
-       padding: 0;
-       -webkit-font-smoothing: antialiased;
-   }
-   
-   /* =========================================
-      CABECERA HERO (ESTILO GAMING)
-      ========================================= */
-   header {
-       background: linear-gradient(135deg, var(--fifa-purple-dark) 0%, var(--fifa-purple) 100%);
-       color: white;
-       padding: 3rem 1rem 2rem 1rem;
-       text-align: center;
-       border-bottom: 6px solid var(--fifa-green);
-       box-shadow: 0 10px 20px rgba(75, 8, 161, 0.2);
-       position: relative;
-       overflow: hidden;
-   }
-   
-   /* Patrón sutil de fondo en la cabecera */
-   header::before {
-       content: '';
-       position: absolute;
-       top: -50%; left: -50%; width: 200%; height: 200%;
-       background: radial-gradient(circle, rgba(0, 255, 136, 0.05) 10%, transparent 20%), 
-                   radial-gradient(circle, rgba(255, 0, 85, 0.05) 10%, transparent 20%);
-       background-size: 60px 60px;
-       background-position: 0 0, 30px 30px;
-       z-index: 0;
-   }
-   
-   header > * { position: relative; z-index: 1; }
-   
-   .logo-oficial {
-       max-width: 160px;
-       height: auto;
-       margin-bottom: 0.5rem;
-       filter: drop-shadow(0 8px 16px rgba(0,0,0,0.4));
-       transition: transform 0.3s ease;
-   }
-   
-   .logo-oficial:hover { transform: scale(1.05); }
-   
-   h1 {
-       font-weight: 900;
-       letter-spacing: -1px;
-       margin: 0 0 1.5rem 0;
-       font-size: 2.2rem;
-       text-transform: uppercase;
-   }
-   
-   nav { display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap; }
-   
-   nav a {
-       color: white;
-       text-decoration: none;
-       font-weight: 700;
-       text-transform: uppercase;
-       font-size: 0.85rem;
-       padding: 0.6rem 1.2rem;
-       border-radius: 30px;
-       background: rgba(255,255,255,0.1);
-       backdrop-filter: blur(5px);
-       border: 1px solid rgba(255,255,255,0.2);
-       transition: all 0.3s ease;
-   }
-   
-   nav a:hover { 
-       background: var(--fifa-green); 
-       color: var(--fifa-purple-dark); 
-       transform: translateY(-2px);
-       box-shadow: 0 4px 12px rgba(0, 255, 136, 0.3);
-   }
-   
-   /* =========================================
-      CONTENEDORES PRINCIPALES (TARJETAS UI)
-      ========================================= */
-   main { 
-       max-width: 1200px; 
-       margin: -2rem auto 3rem auto; 
-       padding: 0 1rem; 
-       position: relative;
-       z-index: 10;
-   }
-   
-   section {
-       margin-bottom: 2.5rem;
-       background-color: var(--bg-card);
-       padding: 2.5rem;
-       border-radius: 20px;
-       box-shadow: 0 12px 36px rgba(0,0,0,0.04);
-       border: 1px solid rgba(255,255,255,0.8);
-   }
-   
-   h2 { 
-       color: var(--fifa-purple); 
-       font-weight: 900;
-       font-size: 1.8rem;
-       letter-spacing: -0.5px;
-       border-bottom: 3px solid var(--bg-body); 
-       padding-bottom: 1rem; 
-       margin-top: 0;
-   }
-   
-   /* =========================================
-      TABLA CLASIFICACIÓN (LEADERBOARD)
-      ========================================= */
-   table { 
-       width: 100%; 
-       border-collapse: separate; 
-       border-spacing: 0 8px;
-       margin-top: 1rem; 
-   }
-   
-   th { 
-       background-color: transparent; 
-       color: var(--text-muted); 
-       font-weight: 700;
-       text-transform: uppercase;
-       font-size: 0.8rem;
-       letter-spacing: 1px;
-       padding: 0 1rem 0.5rem 1rem;
-       border-bottom: 2px solid var(--border-soft);
-   }
-   
-   td { 
-       padding: 1rem; 
-       background-color: white;
-       border-top: 1px solid var(--border-soft);
-       border-bottom: 1px solid var(--border-soft);
-   }
-   
-   tr td:first-child { border-left: 1px solid var(--border-soft); border-radius: 12px 0 0 12px; }
-   tr td:last-child { border-right: 1px solid var(--border-soft); border-radius: 0 12px 12px 0; }
-   
-   /* Estilo para los clasificados al torneo */
-   .zona-clasificacion td { 
-       background: linear-gradient(90deg, rgba(0, 255, 136, 0.05) 0%, white 100%); 
-   }
-   .zona-clasificacion td:first-child {
-       border-left: 5px solid var(--fifa-green);
-   }
-   
-   /* Píldoras de Estado */
-   .badge-estado {
-       display: inline-block;
-       padding: 0.4rem 0.8rem;
-       border-radius: 20px;
-       font-size: 0.75rem;
-       font-weight: 900;
-       text-transform: uppercase;
-       letter-spacing: 0.5px;
-       white-space: nowrap;
-   }
-   
-   .team-info { display: flex; align-items: center; gap: 15px; }
-   
-   .escudo-tabla {
-       width: 48px; height: 48px;
-       border-radius: 50%;
-       object-fit: cover;
-       border: 3px solid var(--border-soft);
-       box-shadow: 0 4px 8px rgba(0,0,0,0.05);
-       background-color: var(--bg-body);
-   }
-   
-   /* =========================================
-      ÁRBOL DEL TORNEO (BRACKET MODERNO)
-      ========================================= */
-   .bracket-container {
-       display: flex;
-       justify-content: space-between;
-       align-items: stretch;
-       gap: 2rem;
-       overflow-x: auto;
-       padding: 2rem 1rem;
-   }
-   
-   .bracket-round {
-       display: flex;
-       flex-direction: column;
-       justify-content: space-around;
-       min-width: 240px;
-       position: relative;
-   }
-   
-   .round-title {
-       text-align: center;
-       font-size: 0.9rem;
-       text-transform: uppercase;
-       color: var(--fifa-purple);
-       font-weight: 900;
-       margin-bottom: 2rem;
-       letter-spacing: 1px;
-   }
-   
-   .matchup {
-       background: white;
-       border: 1px solid var(--border-soft);
-       border-radius: 12px;
-       margin-bottom: 1.5rem;
-       position: relative;
-       z-index: 2;
-       box-shadow: 0 6px 16px rgba(0,0,0,0.04);
-       transition: transform 0.2s ease, box-shadow 0.2s ease;
-   }
-   
-   .matchup:hover {
-       transform: translateY(-4px);
-       box-shadow: 0 12px 24px rgba(0,0,0,0.08);
-   }
-   
-   .matchup .team {
-       padding: 0.8rem 1rem;
-       font-size: 0.95rem;
-       font-weight: 500;
-       display: flex;
-       justify-content: space-between;
-       align-items: center;
-       border-bottom: 1px solid var(--border-soft);
-   }
-   
-   .matchup .team:last-child { border-bottom: none; }
-   
-   .matchup .team.winner { 
-       background-color: rgba(0, 255, 136, 0.08); 
-       font-weight: 900; 
-       color: var(--fifa-purple); 
-   }
-   
-   .matchup .team.seed-high { border-left: 4px solid var(--fifa-purple); border-radius: 12px 0 0 0;}
-   .matchup .team.seed-high:last-child { border-radius: 0 0 0 12px; }
-   
-   .team-name-container { display: flex; align-items: center; gap: 10px; }
-   
-   .escudo-bracket {
-       width: 24px; height: 24px;
-       border-radius: 50%;
-       object-fit: cover;
-       border: 1px solid var(--border-soft);
-   }
-   
-   /* Líneas conectoras */
-   @media (min-width: 768px) {
-       .matchup::after {
-           content: "";
-           position: absolute;
-           right: -1.25rem;
-           top: 50%;
-           width: 1.25rem;
-           border-top: 2px dashed var(--border-soft);
-           z-index: 1;
-       }
-       .bracket-round:last-child .matchup::after { display: none; }
-   }
-   
-   /* =========================================
-      PODIO 3D Y PREMIOS
-      ========================================= */
-   .podio-container {
-       display: flex;
-       justify-content: center;
-       align-items: flex-end;
-       gap: 1.5rem;
-       height: 280px;
-       margin-top: 3rem;
-       padding-bottom: 1rem;
-       border-bottom: 2px solid var(--bg-body);
-   }
-   
-   .escalon {
-       display: flex;
-       flex-direction: column;
-       justify-content: flex-end;
-       align-items: center;
-       color: white;
-       font-weight: 900;
-       border-radius: 16px 16px 0 0;
-       text-align: center;
-       padding: 1.5rem 1rem;
-       width: 130px;
-       position: relative;
-       transition: transform 0.3s ease;
-   }
-   
-   .escalon:hover { transform: translateY(-10px); }
-   
-   .escalon .nombre { 
-       font-size: 1.1rem; 
-       margin-bottom: 0.5rem; 
-       text-shadow: 0 2px 4px rgba(0,0,0,0.3); 
-       letter-spacing: 0.5px;
-   }
-   
-   .oro { 
-       height: 220px; 
-       background: linear-gradient(135deg, #FFDF00, #D4AF37); 
-       box-shadow: 0 -10px 30px rgba(255, 215, 0, 0.4), inset 0 5px 10px rgba(255,255,255,0.5);
-       z-index: 3; 
-   }
-   
-   .plata { 
-       height: 170px; 
-       background: linear-gradient(135deg, #E0E0E0, #9E9E9E); 
-       box-shadow: 0 -5px 20px rgba(158, 158, 158, 0.2), inset 0 5px 10px rgba(255,255,255,0.5);
-       z-index: 2; 
-   }
-   
-   .bronce { 
-       height: 140px; 
-       background: linear-gradient(135deg, #CD7F32, #8B4513); 
-       box-shadow: 0 -5px 20px rgba(139, 69, 19, 0.2), inset 0 5px 10px rgba(255,255,255,0.3);
-       z-index: 1; 
-   }
-   
-   .escudo-podio {
-       width: 70px; height: 70px;
-       border-radius: 50%;
-       object-fit: cover;
-       border: 4px solid white;
-       margin-bottom: 12px;
-       background-color: var(--fifa-purple);
-       box-shadow: 0 8px 16px rgba(0,0,0,0.2);
-   }
-   
-   /* Grid de Premios */
-   .premios-grid {
-       display: grid;
-       grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-       gap: 1.5rem;
-       margin-top: 3rem;
-   }
-   
-   .premio-card {
-       background: white;
-       border-top: 5px solid var(--fifa-magenta);
-       padding: 2rem 1.5rem;
-       border-radius: 16px;
-       text-align: center;
-       box-shadow: 0 8px 24px rgba(0,0,0,0.05);
-       transition: transform 0.3s ease, box-shadow 0.3s ease;
-   }
-   
-   .premio-card:hover {
-       transform: translateY(-5px);
-       box-shadow: 0 12px 32px rgba(0,0,0,0.1);
-   }
-   
-   /* Estilo VIP Exclusivo para el Campeón General (Tarjeta 2) */
-   .premio-card:nth-child(2) {
-       border-top: 5px solid var(--gold);
-       background: linear-gradient(to bottom, #fffdf5, #ffffff);
-       box-shadow: 0 10px 30px rgba(255, 215, 0, 0.2);
-   }
-   
-   .premio-card h3 { 
-       margin: 0 0 1rem 0; 
-       color: var(--fifa-purple); 
-       font-size: 1.1rem; 
-       font-weight: 900;
-       text-transform: uppercase;
-   }
-   
-   .premio-card p { 
-       margin: 0; 
-       font-size: 1.4rem; 
-       font-weight: 900; 
-       color: var(--text-main);
-   }
-   
-   .premio-card small { 
-       color: var(--text-muted); 
-       font-size: 0.9rem; 
-       display: block; 
-       margin-top: 0.5rem; 
-       font-weight: 500;
-   }
+:root {
+    --bg-card: #ffffff;
+    --text-main: #111111;
+    --text-muted: #666666;
+    
+    /* Paleta Oficial 2026 Vibrante */
+    --fifa-purple: #4b08a1;
+    --fifa-magenta: #ff0055;
+    --fifa-cyan: #00e5ff;
+    --fifa-green: #00ff88;
+    
+    /* Acentos */
+    --border-soft: #eaedf2;
+}
+
+/* Fondo Falso Psicodélico (No interfiere con el texto) */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    background: radial-gradient(circle at 10% 20%, rgba(255, 0, 85, 0.03), transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(0, 255, 136, 0.04), transparent 40%),
+                radial-gradient(circle at 50% 50%, rgba(75, 8, 161, 0.03), transparent 50%);
+    z-index: -1;
+    background-color: #f7f9fc;
+}
+
+body {
+    font-family: 'Outfit', sans-serif;
+    color: var(--text-main);
+    margin: 0;
+    padding: 0;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* =========================================
+   CABECERA DEGRADADA DINÁMICA
+   ========================================= */
+header {
+    background: linear-gradient(120deg, var(--fifa-purple), var(--fifa-magenta), #2a0066, var(--fifa-cyan));
+    background-size: 300% 300%;
+    animation: gradientMove 12s ease infinite;
+    color: white;
+    padding: 3.5rem 1rem 2rem 1rem;
+    text-align: center;
+    box-shadow: 0 10px 20px rgba(75, 8, 161, 0.2);
+    position: relative;
+}
+
+@keyframes gradientMove {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+.logo-oficial {
+    max-width: 250px; /* Logo ampliado según tu petición */
+    height: auto;
+    margin-bottom: 0.5rem;
+    filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5));
+    transition: transform 0.3s ease;
+}
+
+.logo-oficial:hover { transform: scale(1.05); }
+
+h1 {
+    font-weight: 900;
+    letter-spacing: -1px;
+    margin: 0 0 1.5rem 0;
+    font-size: 2.2rem;
+    text-transform: uppercase;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+nav { display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap; }
+
+nav a {
+    color: white;
+    text-decoration: none;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    padding: 0.6rem 1.2rem;
+    border-radius: 30px;
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(255,255,255,0.3);
+    transition: all 0.3s ease;
+}
+
+nav a:hover { 
+    background: var(--fifa-green); 
+    color: var(--fifa-purple); 
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 255, 136, 0.4);
+}
+
+/* =========================================
+   CONTENEDORES UI
+   ========================================= */
+main { 
+    max-width: 1200px; 
+    margin: -2rem auto 3rem auto; 
+    padding: 0 1rem; 
+    position: relative;
+    z-index: 10;
+}
+
+section {
+    margin-bottom: 2.5rem;
+    background-color: var(--bg-card);
+    padding: 2.5rem;
+    border-radius: 20px;
+    box-shadow: 0 12px 36px rgba(0,0,0,0.06);
+    border: 1px solid rgba(255,255,255,1);
+}
+
+h2 { 
+    color: var(--fifa-purple); 
+    font-weight: 900;
+    font-size: 1.8rem;
+    letter-spacing: -0.5px;
+    border-bottom: 3px solid #f0f2f5; 
+    padding-bottom: 1rem; 
+    margin-top: 0;
+}
+
+/* =========================================
+   TABLA (VERDE CLASIFICADOS / ROJO ELIMINADOS)
+   ========================================= */
+table { 
+    width: 100%; 
+    border-collapse: separate; 
+    border-spacing: 0 6px;
+    margin-top: 1rem; 
+}
+
+th { 
+    background-color: transparent; 
+    color: var(--text-muted); 
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+    padding: 0 1rem 0.5rem 1rem;
+    border-bottom: 2px solid var(--border-soft);
+}
+
+td { padding: 1rem; background-color: white; }
+
+tr td:first-child { border-radius: 12px 0 0 12px; }
+tr td:last-child { border-radius: 0 12px 12px 0; }
+
+/* Zonas de la tabla coloreadas en tonos pastel */
+.zona-clasificacion td { background: rgba(0, 255, 136, 0.1); border-top: 1px solid rgba(0, 255, 136, 0.2); border-bottom: 1px solid rgba(0, 255, 136, 0.2);}
+.zona-clasificacion td:first-child { border-left: 5px solid var(--fifa-green); }
+
+.zona-eliminacion td { background: rgba(255, 0, 85, 0.04); border-top: 1px solid rgba(255, 0, 85, 0.1); border-bottom: 1px solid rgba(255, 0, 85, 0.1);}
+.zona-eliminacion td:first-child { border-left: 5px solid var(--fifa-magenta); filter: grayscale(50%); opacity: 0.8;}
+
+.badge-estado {
+    display: inline-block;
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.team-info { display: flex; align-items: center; gap: 15px; }
+
+.escudo-tabla {
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--border-soft);
+    background-color: white;
+}
+
+/* =========================================
+   ÁRBOL CONVERGENTE (ESPEJO)
+   ========================================= */
+.bracket-symmetrical {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    overflow-x: auto;
+    padding: 2rem 0;
+}
+
+.pathway {
+    display: flex;
+    gap: 1.5rem;
+    align-items: center;
+}
+
+.bracket-col {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    gap: 1.5rem;
+}
+
+.sf-col { justify-content: center; height: 100%; gap: 6rem;} /* Separa más las semis */
+
+.pathway-center {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+    min-width: 220px;
+    padding: 0 1rem;
+}
+
+.round-badge {
+    background: var(--fifa-purple);
+    color: white;
+    font-weight: 900;
+    padding: 0.4rem 1.5rem;
+    border-radius: 30px;
+    font-size: 0.8rem;
+    letter-spacing: 2px;
+    box-shadow: 0 4px 10px rgba(75, 8, 161, 0.3);
+}
+
+/* Tarjetas de Cruce estilo FIFA */
+.matchup-card {
+    background: white;
+    border-radius: 12px;
+    width: 220px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+    border: 1px solid var(--border-soft);
+    overflow: hidden;
+    transition: transform 0.2s;
+}
+
+.matchup-card:hover { transform: scale(1.03); box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
+
+.team-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.6rem 1rem;
+    border-bottom: 1px solid var(--border-soft);
+}
+.team-row:last-child { border-bottom: none; }
+
+.team-row.winner { background: rgba(0, 255, 136, 0.15); border-left: 4px solid var(--fifa-green); }
+
+.team-name-container { display: flex; align-items: center; gap: 10px; }
+.t-name { font-weight: 700; font-size: 0.9rem; }
+
+.pts-badge {
+    font-weight: 900;
+    color: var(--fifa-purple);
+    font-size: 1.15rem;
+}
+
+.escudo-bracket {
+    width: 26px; height: 26px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid var(--border-soft);
+}
+
+/* =========================================
+   PODIO ESPECTACULAR
+   ========================================= */
+.podio-container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    gap: 1.5rem;
+    height: 300px;
+    margin-top: 3rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid var(--border-soft);
+}
+
+.escalon {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+    color: white;
+    border-radius: 16px 16px 0 0;
+    text-align: center;
+    padding: 1.5rem 1rem;
+    width: 140px;
+    position: relative;
+    transition: transform 0.3s ease;
+}
+
+.escalon:hover { transform: translateY(-15px); }
+
+.escalon .nombre { 
+    font-size: 1.2rem; 
+    font-weight: 900;
+    margin-bottom: 0.5rem; 
+    text-shadow: 0 2px 5px rgba(0,0,0,0.4); 
+    letter-spacing: 0.5px;
+}
+
+.medal-tag {
+    background: rgba(0,0,0,0.3);
+    padding: 0.2rem 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: bold;
+}
+
+.oro { 
+    height: 240px; 
+    background: linear-gradient(135deg, #FFDF00, #D4AF37, #B8860B); 
+    box-shadow: 0 0 30px rgba(255, 215, 0, 0.6), inset 0 5px 15px rgba(255,255,255,0.6);
+    z-index: 3; 
+}
+
+.plata { 
+    height: 180px; 
+    background: linear-gradient(135deg, #E0E0E0, #9E9E9E, #757575); 
+    box-shadow: 0 -5px 20px rgba(158, 158, 158, 0.4), inset 0 5px 10px rgba(255,255,255,0.5);
+    z-index: 2; 
+}
+
+.bronce { 
+    height: 150px; 
+    background: linear-gradient(135deg, #CD7F32, #8B4513, #5D4037); 
+    box-shadow: 0 -5px 20px rgba(139, 69, 19, 0.4), inset 0 5px 10px rgba(255,255,255,0.3);
+    z-index: 1; 
+}
+
+.escudo-podio {
+    width: 80px; height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid white;
+    margin-bottom: 12px;
+    background-color: var(--fifa-purple);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+}
+
+/* =========================================
+   PREMIOS (GRID)
+   ========================================= */
+.premios-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.5rem;
+    margin-top: 3rem;
+}
+
+.premio-card {
+    background: white;
+    border-top: 5px solid var(--fifa-magenta);
+    padding: 2rem 1.5rem;
+    border-radius: 16px;
+    text-align: center;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.05);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.premio-card:hover { transform: translateY(-5px); box-shadow: 0 12px 32px rgba(0,0,0,0.1); }
+
+.vip-card {
+    border-top: 5px solid var(--fifa-cyan);
+    background: linear-gradient(to bottom, #f0fbff, #ffffff);
+    box-shadow: 0 10px 30px rgba(0, 229, 255, 0.15);
+}
+
+.premio-card h3 { 
+    margin: 0 0 1rem 0; 
+    color: var(--fifa-purple); 
+    font-size: 1.1rem; 
+    font-weight: 900;
+    text-transform: uppercase;
+}
+
+.premio-card p { margin: 0; font-size: 1.4rem; font-weight: 900; color: var(--text-main); }
+.premio-card small { color: var(--text-muted); font-size: 0.9rem; display: block; margin-top: 0.5rem; font-weight: 500; }
