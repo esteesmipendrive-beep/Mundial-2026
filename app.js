@@ -23,7 +23,7 @@ async function obtenerDatosMundial() {
         
     } catch (error) {
         console.error(error);
-        document.getElementById("cuerpo-tabla").innerHTML = `<tr><td colspan="5" style="color:red; text-align:center;">Error de Base de Datos. Revisa tu Excel.</td></tr>`;
+        document.getElementById("cuerpo-tabla").innerHTML = `<tr><td colspan="5" style="color:red; text-align:center;">Error de Base de Datos.</td></tr>`;
     }
 }
 
@@ -290,8 +290,8 @@ function renderizarTorneo(top8) {
                 </div>
                 
                 <div class="tercer-puesto-wrapper">
-                    <div class="round-header badge-tercero">3º PUESTO</div>
                     ${generarHtmlFinal(perdedorSemi1, perdedorSemi2, 'ptsTercero', false)}
+                    <div class="header-tercero">3º PUESTO</div>
                 </div>
             </div>
 
@@ -312,7 +312,6 @@ function renderizarTorneo(top8) {
         </div>
     `;
 
-    // AÑADIDO: Renderizado de premios en el podio
     renderizarPodio(campeon, subcampeon, tercero);
 }
 
@@ -370,7 +369,6 @@ function generarHtmlFinal(jugadorA, jugadorB, columna, isFinal) {
     </div>`;
 }
 
-// AQUÍ ESTÁN INYECTADOS LOS BILLETES DE PREMIO ENCIMA DEL PODIO
 function renderizarPodio(oro, plata, bronce) {
     const contenedor = document.getElementById("podio-final");
     const enJuego = oro.nombre === "---" || oro.nombre === "Esperando";
@@ -389,7 +387,7 @@ function renderizarPodio(oro, plata, bronce) {
             <div class="tag-medal">1º</div>
         </div>
         <div class="escalon bronce">
-            <div class="prize-amount" style="color: transparent;">-</div>
+            <div class="prize-amount" style="color: #cd7f32;">0€</div>
             ${!enJuego ? `<img src="${bronce.logo}" class="escudo-podio" onerror="this.style.display='none'">` : ''}
             <div class="nombre">${enJuego ? 'En juego' : bronce.nombre}</div>
             <div class="tag-medal">3º</div>
