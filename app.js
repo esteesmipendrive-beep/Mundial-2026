@@ -402,3 +402,6 @@ function calcularPremios(jugadores) {
         <div class="premio-card" style="border-top-color: #888;"><h3>🏮 Farolillo Rojo</h3><p>${farolillo.nombre}</p><small>Último en Liguilla (${farolillo.ptsLiguilla} pts)</small></div>
     `;
 }
+
+
+
