@@ -1,4 +1,3 @@
-// ENLACE CORRECTO Y BLINDADO (NO TOCAR)
 const URL_SHEET = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSY9OP3N3MoehCAKTfU83Z__5Ecu0GAukFgCKk1ZYB5hQQxwwK1j9DdlK_64KByH432zf48yc0jGBvI/pub?output=csv";
 const FALLBACK_IMG = "https://via.placeholder.com/60/2a2a2a/00ff88?text=FC";
 
