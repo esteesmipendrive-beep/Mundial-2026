@@ -117,3 +117,6 @@ tr td:last-child { border-right: 1px solid var(--border-soft); border-radius: 0 
 .premio-card h3 { margin: 0 0 1rem 0; color: var(--fifa-purple); font-size: 1.1rem; font-weight: 900; text-transform: uppercase;}
 .premio-card p { margin: 0; font-size: 1.4rem; font-weight: 900; color: var(--text-main); }
 .premio-card small { color: var(--text-muted); font-size: 0.9rem; display: block; margin-top: 0.5rem; font-weight: 500;}
+
+
+
