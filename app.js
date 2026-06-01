@@ -1,3 +1,4 @@
+// ENLACE CORRECTO Y BLINDADO (NO TOCAR)
 const URL_SHEET = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSY9OP3N3MoehCAKTfU83Z__5Ecu0GAukFgCKk1ZYB5hQQxwwK1j9DdlK_64KByH432zf48yc0jGBvI/pub?output=csv";
 const FALLBACK_IMG = "https://via.placeholder.com/60/2a2a2a/00ff88?text=FC";
 
@@ -8,7 +9,7 @@ document.addEventListener("DOMContentLoaded", () => {
 async function obtenerDatosMundial() {
     try {
         const respuesta = await fetch(URL_SHEET);
-        if (!respuesta.ok) throw new Error("Fallo en la conexión");
+        if (!respuesta.ok) throw new Error("Fallo de conexión");
         
         const textoCSV = await respuesta.text();
         const jugadores = parsearCSV(textoCSV);
@@ -18,12 +19,11 @@ async function obtenerDatosMundial() {
         
         const clasificadosTorneo = jugadores.filter(j => j.seed <= 8).sort((a, b) => a.seed - b.seed);
         renderizarTorneo(clasificadosTorneo); 
-        
         calcularPremios(jugadores);
         
     } catch (error) {
         console.error(error);
-        document.getElementById("cuerpo-tabla").innerHTML = `<tr><td colspan="5" style="color:red; text-align:center;">Error de Base de Datos. Revisa tu Excel.</td></tr>`;
+        document.getElementById("cuerpo-tabla").innerHTML = `<tr><td colspan="5" style="color:red; font-weight:bold; text-align:center; padding:2rem;">Error Crítico. Revisa que el enlace sea acabado en /pub?output=csv</td></tr>`;
     }
 }
 
@@ -36,7 +36,11 @@ function parsearCSV(texto) {
         if (!linea) continue;
         
         const col = linea.split(",");
+        const nombreStr = col[0]?.replace(/"/g, '').trim();
         
+        // BLINDAJE: Si la fila no tiene nombre o lee HTML, la ignora
+        if (!nombreStr || nombreStr === "" || nombreStr.includes("<html")) continue;
+
         const ptsLiguilla = parseInt(col[2]) || 0;
         const ptsDieciseisavos = parseInt(col[3]) || 0;
         const ptsOctavos = parseInt(col[4]) || 0;
@@ -48,8 +52,8 @@ function parsearCSV(texto) {
         const ptsTotales = ptsLiguilla + ptsDieciseisavos + ptsOctavos + ptsCuartos + ptsSemis + ptsFinal + ptsTercero;
         
         resultado.push({
-            nombre: col[0]?.replace(/"/g, '').trim() || "???",
-            equipo: col[1]?.replace(/"/g, '').trim() || "???",
+            nombre: nombreStr,
+            equipo: col[1]?.replace(/"/g, '').trim() || "Mánager",
             ptsLiguilla: ptsLiguilla,
             ptsDieciseisavos: ptsDieciseisavos,
             ptsOctavos: ptsOctavos,
@@ -65,11 +69,12 @@ function parsearCSV(texto) {
     resultado.sort((a, b) => b.ptsLiguilla - a.ptsLiguilla);
     resultado.forEach((j, index) => j.seed = index + 1);
     resultado.sort((a, b) => b.ptsTotales - a.ptsTotales);
-
     return resultado;
 }
 
 function asignarEstadosLogicos(jugadores) {
+    if (!jugadores || jugadores.length === 0) return;
+
     jugadores.forEach((j, i) => {
         if (j.seed > 8) {
             marcarEstado(j, "❌ Eliminado", "#ff4444", "rgba(255, 68, 68, 0.1)");
@@ -79,16 +84,15 @@ function asignarEstadosLogicos(jugadores) {
     });
 
     const top8 = jugadores.filter(j => j.seed <= 8).sort((a,b) => a.seed - b.seed);
-    if (top8.length < 8) return;
-
     const crucesQ = [[0,7], [3,4], [1,6], [2,5]];
     const semis = [];
 
     crucesQ.forEach(cruce => {
         const jA = top8[cruce[0]], jB = top8[cruce[1]];
+        if (!jA || !jB) return;
+
         const totA = jA.ptsDieciseisavos + jA.ptsOctavos;
         const totB = jB.ptsDieciseisavos + jB.ptsOctavos;
-
         if (totA === 0 && totB === 0) return;
 
         let ganaA = totA > totB || (totA === totB && totA > 0 && jA.seed < jB.seed);
@@ -111,9 +115,10 @@ function asignarEstadosLogicos(jugadores) {
 
         crucesS.forEach(cruce => {
             const jA = cruce[0], jB = cruce[1];
+            if (!jA || !jB) return;
+
             const totA = jA.ptsCuartos + jA.ptsSemis;
             const totB = jB.ptsCuartos + jB.ptsSemis;
-
             if (totA === 0 && totB === 0) return;
 
             let ganaA = totA > totB || (totA === totB && totA > 0 && jA.seed < jB.seed);
@@ -143,77 +148,24 @@ function asignarEstadosLogicos(jugadores) {
                 }
             }
         }
-
-        if (terceros.length === 2) {
-            const tA = terceros[0], tB = terceros[1];
-            if (tA.ptsTercero > 0 || tB.ptsTercero > 0) {
-                let ganaA = tA.ptsTercero > tB.ptsTercero || (tA.ptsTercero === tB.ptsTercero && tA.ptsTercero > 0 && tA.seed < tB.seed);
-                if (ganaA) {
-                    marcarEstado(tA, "🥉 3º Puesto", "#8b4513", "rgba(205, 127, 50, 0.2)");
-                    marcarEstado(tB, "4º Puesto", "#888888", "#eeeeee");
-                } else {
-                    marcarEstado(tB, "🥉 3º Puesto", "#8b4513", "rgba(205, 127, 50, 0.2)");
-                    marcarEstado(tA, "4º Puesto", "#888888", "#eeeeee");
-                }
-            }
-        }
     }
 }
 
-function obtenerGanadorDoble(jugadorA, jugadorB, colIda, colVuelta) {
-    if (!jugadorA || !jugadorB) return { nombre: "---", ptsMostrados: 0, logo: FALLBACK_IMG };
-    const totalA = jugadorA[colIda] + jugadorA[colVuelta];
-    const totalB = jugadorB[colIda] + jugadorB[colVuelta];
-    if (totalA === 0 && totalB === 0) return { nombre: "Esperando", ptsMostrados: 0, logo: FALLBACK_IMG };
-    
-    let ganaA = totalA > totalB || (totalA === totalB && totalA > 0 && jugadorA.seed < jugadorB.seed);
-    let ganaB = totalB > totalA || (totalA === totalB && totalB > 0 && jugadorB.seed < jugadorA.seed);
-
-    if (ganaA) return { ...jugadorA, ptsMostrados: totalA };
-    if (ganaB) return { ...jugadorB, ptsMostrados: totalB };
-    return { nombre: "Esperando", ptsMostrados: 0, logo: FALLBACK_IMG };
-}
-
-function obtenerPerdedorDoble(jugadorA, jugadorB, colIda, colVuelta) {
-    if (!jugadorA || !jugadorB || jugadorA.nombre === "---" || jugadorB.nombre === "---" || jugadorA.nombre === "Esperando" || jugadorB.nombre === "Esperando") return { nombre: "Esperando", ptsMostrados: 0, logo: FALLBACK_IMG };
-    const totalA = jugadorA[colIda] + jugadorA[colVuelta];
-    const totalB = jugadorB[colIda] + jugadorB[colVuelta];
-    if (totalA === 0 && totalB === 0) return { nombre: "Esperando", ptsMostrados: 0, logo: FALLBACK_IMG };
-    
-    let ganaA = totalA > totalB || (totalA === totalB && totalA > 0 && jugadorA.seed < jugadorB.seed);
-    let ganaB = totalB > totalA || (totalA === totalB && totalB > 0 && jugadorB.seed < jugadorA.seed);
-
-    if (ganaA) return jugadorB;
-    if (ganaB) return jugadorA;
-    return { nombre: "Esperando", ptsMostrados: 0, logo: FALLBACK_IMG };
-}
-
-function obtenerGanadorUnico(jugadorA, jugadorB, columna) {
-    if (!jugadorA || !jugadorB) return { nombre: "---", ptsMostrados: 0, logo: FALLBACK_IMG };
-    const ptsA = jugadorA[columna];
-    const ptsB = jugadorB[columna];
-    if (ptsA === 0 && ptsB === 0) return { nombre: "Esperando", ptsMostrados: 0, logo: FALLBACK_IMG };
-    
-    let ganaA = ptsA > ptsB || (ptsA === ptsB && ptsA > 0 && jugadorA.seed < jugadorB.seed);
-    let ganaB = ptsB > ptsA || (ptsA === ptsB && ptsB > 0 && jugadorB.seed < jugadorA.seed);
-
-    if (ganaA) return { ...jugadorA, ptsMostrados: ptsA };
-    if (ganaB) return { ...jugadorB, ptsMostrados: ptsB };
-    return { nombre: "Esperando", ptsMostrados: 0, logo: FALLBACK_IMG };
+function marcarEstado(j, texto, color, fondo) {
+    j.estadoStr = texto; j.estadoColor = color; j.estadoBg = fondo;
 }
 
 function renderizarClasificacion(jugadores) {
     const tbody = document.getElementById("cuerpo-tabla");
-    tbody.innerHTML = "";
-    if (jugadores.length === 0) return;
+    if (!jugadores || jugadores.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:2rem;">Esperando a que añadas jugadores al Excel...</td></tr>`;
+        return;
+    }
 
+    tbody.innerHTML = "";
     jugadores.forEach((jugador, index) => {
         const tr = document.createElement("tr");
-        if (jugador.seed <= 8) {
-            tr.className = "zona-clasificacion";
-        } else {
-            tr.className = "zona-eliminacion";
-        }
+        tr.className = jugador.seed <= 8 ? "zona-clasificacion" : "zona-eliminacion";
 
         tr.innerHTML = `
             <td><strong>${index + 1}</strong></td>
@@ -226,11 +178,7 @@ function renderizarClasificacion(jugadores) {
                     </div>
                 </div>
             </td>
-            <td>
-                <span class="badge-estado" style="color: ${jugador.estadoColor}; background-color: ${jugador.estadoBg};">
-                    ${jugador.estadoStr}
-                </span>
-            </td>
+            <td><span class="badge-estado" style="color: ${jugador.estadoColor || '#888'}; background-color: ${jugador.estadoBg || '#eee'};">${jugador.estadoStr || 'Esperando'}</span></td>
             <td style="color:#888;">${jugador.ptsLiguilla} pts</td>
             <td><strong style="font-size: 1.1rem; color: var(--fifa-purple);">${jugador.ptsTotales} pts</strong></td>
         `;
@@ -238,9 +186,48 @@ function renderizarClasificacion(jugadores) {
     });
 }
 
-function renderizarTorneo(top8) {
+function obtenerGanadorDoble(jugadorA, jugadorB, colIda, colVuelta) {
+    if (!jugadorA || !jugadorB) return null;
+    const totalA = (jugadorA[colIda] || 0) + (jugadorA[colVuelta] || 0);
+    const totalB = (jugadorB[colIda] || 0) + (jugadorB[colVuelta] || 0);
+    if (totalA === 0 && totalB === 0) return null;
+    
+    let ganaA = totalA > totalB || (totalA === totalB && totalA > 0 && jugadorA.seed < jugadorB.seed);
+    if (ganaA) return { ...jugadorA, ptsMostrados: totalA };
+    if (totalB > totalA || (totalA === totalB && totalB > 0 && jugadorB.seed < jugadorA.seed)) return { ...jugadorB, ptsMostrados: totalB };
+    return null;
+}
+
+function obtenerPerdedorDoble(jugadorA, jugadorB, colIda, colVuelta) {
+    if (!jugadorA || !jugadorB) return null;
+    const totalA = (jugadorA[colIda] || 0) + (jugadorA[colVuelta] || 0);
+    const totalB = (jugadorB[colIda] || 0) + (jugadorB[colVuelta] || 0);
+    if (totalA === 0 && totalB === 0) return null;
+    
+    let ganaA = totalA > totalB || (totalA === totalB && totalA > 0 && jugadorA.seed < jugadorB.seed);
+    if (ganaA) return jugadorB;
+    if (totalB > totalA || (totalA === totalB && totalB > 0 && jugadorB.seed < jugadorA.seed)) return jugadorA;
+    return null;
+}
+
+function obtenerGanadorUnico(jugadorA, jugadorB, columna) {
+    if (!jugadorA || !jugadorB) return null;
+    const ptsA = jugadorA[columna] || 0;
+    const ptsB = jugadorB[columna] || 0;
+    if (ptsA === 0 && ptsB === 0) return null;
+    
+    let ganaA = ptsA > ptsB || (ptsA === ptsB && ptsA > 0 && jugadorA.seed < jugadorB.seed);
+    if (ganaA) return { ...jugadorA, ptsMostrados: ptsA };
+    if (ptsB > ptsA || (ptsA === ptsB && ptsB > 0 && jugadorB.seed < jugadorA.seed)) return { ...jugadorB, ptsMostrados: ptsB };
+    return null;
+}
+
+function renderizarTorneo(top8_original) {
     const contenedor = document.getElementById("contenedor-torneo");
-    if (top8.length < 8) return;
+    
+    // BLINDAJE: Rellena con vacíos para dibujar el cuadro aunque el Excel esté vacío
+    let top8 = [...(top8_original || [])];
+    while (top8.length < 8) top8.push(null); 
 
     const q1_A = top8[0], q1_B = top8[7], q2_A = top8[3], q2_B = top8[4];
     const q3_A = top8[1], q3_B = top8[6], q4_A = top8[2], q4_B = top8[5];
@@ -257,7 +244,7 @@ function renderizarTorneo(top8) {
     const final_B = obtenerGanadorDoble(semi2_A, semi2_B, 'ptsCuartos', 'ptsSemis');
 
     const campeon = obtenerGanadorUnico(final_A, final_B, 'ptsFinal');
-    const subcampeon = campeon.nombre === final_A.nombre ? final_B : (campeon.nombre === final_B.nombre ? final_A : {nombre: "---", logo: FALLBACK_IMG});
+    const subcampeon = campeon ? (campeon.nombre === final_A?.nombre ? final_B : final_A) : null;
     const tercero = obtenerGanadorUnico(perdedorSemi1, perdedorSemi2, 'ptsTercero');
 
     contenedor.innerHTML = `
@@ -282,7 +269,6 @@ function renderizarTorneo(top8) {
                 <div class="col-content final-content">
                     ${generarHtmlFinal(final_A, final_B, 'ptsFinal', true)}
                 </div>
-                
                 <div class="tercer-puesto-wrapper">
                     ${generarHtmlFinal(perdedorSemi1, perdedorSemi2, 'ptsTercero', false)}
                     <div class="header-tercero">3º PUESTO</div>
@@ -310,54 +296,46 @@ function renderizarTorneo(top8) {
 }
 
 function generarHtmlEncuentro(jugadorA, jugadorB, colIda, colVuelta) {
-    if (!jugadorA || !jugadorB) return `<div class="matchup-container">---</div>`;
-    const totA = jugadorA[colIda] + jugadorA[colVuelta];
-    const totB = jugadorB[colIda] + jugadorB[colVuelta];
-    
+    const defaultRow = `<div class="team-row"><div class="team-name-badge"><img src="${FALLBACK_IMG}" class="escudo-bracket" onerror="this.style.display='none'"><span class="t-name-label">Esperando</span></div><span class="points-badge">-</span></div>`;
+    if (!jugadorA && !jugadorB) return `<div class="matchup-container">${defaultRow}${defaultRow}</div>`;
+    if (!jugadorB) jugadorB = { nombre: "Esperando", logo: FALLBACK_IMG };
+
+    const totA = (jugadorA[colIda] || 0) + (jugadorA[colVuelta] || 0);
+    const totB = (jugadorB[colIda] || 0) + (jugadorB[colVuelta] || 0);
     let ganaA = (totA > 0 || totB > 0) && (totA > totB || (totA === totB && jugadorA.seed < jugadorB.seed));
     let ganaB = (totA > 0 || totB > 0) && (totB > totA || (totA === totB && jugadorB.seed < jugadorA.seed));
 
     return `
     <div class="matchup-container">
         <div class="team-row ${ganaA ? 'winner' : ''} ${ganaB && totB>0 ? 'eliminated':''}">
-            <div class="team-name-badge">
-                <img src="${jugadorA.logo}" class="escudo-bracket" onerror="this.style.display='none'">
-                <span class="t-name-label">${jugadorA.nombre}</span>
-            </div>
+            <div class="team-name-badge"><img src="${jugadorA.logo || FALLBACK_IMG}" class="escudo-bracket" onerror="this.style.display='none'"><span class="t-name-label">${jugadorA.nombre}</span></div>
             <span class="points-badge">${totA > 0 ? totA : '-'}</span>
         </div>
         <div class="team-row ${ganaB ? 'winner' : ''} ${ganaA && totA>0 ? 'eliminated':''}">
-            <div class="team-name-badge">
-                <img src="${jugadorB.logo}" class="escudo-bracket" onerror="this.style.display='none'">
-                <span class="t-name-label">${jugadorB.nombre}</span>
-            </div>
+            <div class="team-name-badge"><img src="${jugadorB.logo || FALLBACK_IMG}" class="escudo-bracket" onerror="this.style.display='none'"><span class="t-name-label">${jugadorB.nombre}</span></div>
             <span class="points-badge">${totB > 0 ? totB : '-'}</span>
         </div>
     </div>`;
 }
 
 function generarHtmlFinal(jugadorA, jugadorB, columna, isFinal) {
-    if (!jugadorA || !jugadorB) return `<div class="matchup-container">---</div>`;
+    const defaultRow = `<div class="team-row"><div class="team-name-badge"><img src="${FALLBACK_IMG}" class="escudo-bracket" onerror="this.style.display='none'"><span class="t-name-label">Esperando</span></div><span class="points-badge gold-pts">-</span></div>`;
+    if (!jugadorA && !jugadorB) return `<div class="matchup-container ${isFinal ? 'final-matchup' : ''}">${defaultRow}${defaultRow}</div>`;
+    if (!jugadorB) jugadorB = { nombre: "Esperando", logo: FALLBACK_IMG };
+
     const ptsA = jugadorA[columna] || 0;
     const ptsB = jugadorB[columna] || 0;
-    
     let ganaA = (ptsA > 0 || ptsB > 0) && (ptsA > ptsB || (ptsA === ptsB && jugadorA.seed < jugadorB.seed));
     let ganaB = (ptsA > 0 || ptsB > 0) && (ptsB > ptsA || (ptsA === ptsB && jugadorB.seed < jugadorA.seed));
 
     return `
     <div class="matchup-container ${isFinal ? 'final-matchup' : ''}">
         <div class="team-row ${ganaA ? 'winner' : ''} ${ganaB && ptsB>0 ? 'eliminated':''}">
-            <div class="team-name-badge">
-                <img src="${jugadorA.logo}" class="escudo-bracket" onerror="this.style.display='none'">
-                <span class="t-name-label">${jugadorA.nombre}</span>
-            </div>
+            <div class="team-name-badge"><img src="${jugadorA.logo || FALLBACK_IMG}" class="escudo-bracket" onerror="this.style.display='none'"><span class="t-name-label">${jugadorA.nombre}</span></div>
             <span class="points-badge gold-pts">${ptsA > 0 ? ptsA : '-'}</span>
         </div>
         <div class="team-row ${ganaB ? 'winner' : ''} ${ganaA && ptsA>0 ? 'eliminated':''}">
-            <div class="team-name-badge">
-                <img src="${jugadorB.logo}" class="escudo-bracket" onerror="this.style.display='none'">
-                <span class="t-name-label">${jugadorB.nombre}</span>
-            </div>
+            <div class="team-name-badge"><img src="${jugadorB.logo || FALLBACK_IMG}" class="escudo-bracket" onerror="this.style.display='none'"><span class="t-name-label">${jugadorB.nombre}</span></div>
             <span class="points-badge gold-pts">${ptsB > 0 ? ptsB : '-'}</span>
         </div>
     </div>`;
@@ -365,25 +343,25 @@ function generarHtmlFinal(jugadorA, jugadorB, columna, isFinal) {
 
 function renderizarPodio(oro, plata, bronce) {
     const contenedor = document.getElementById("podio-final");
-    const enJuego = oro.nombre === "---" || oro.nombre === "Esperando";
+    const enJuego = !oro || oro.nombre === "Esperando";
     
     contenedor.innerHTML = `
         <div class="escalon plata">
             <div class="prize-amount">10€</div>
-            ${!enJuego ? `<img src="${plata.logo}" class="escudo-podio" onerror="this.style.display='none'">` : ''}
-            <div class="nombre">${enJuego ? 'En juego' : plata.nombre}</div>
+            ${!enJuego && plata ? `<img src="${plata.logo}" class="escudo-podio" onerror="this.style.display='none'">` : ''}
+            <div class="nombre">${enJuego ? 'En juego' : (plata ? plata.nombre : '---')}</div>
             <div class="tag-medal">2º</div>
         </div>
         <div class="escalon oro">
             <div class="prize-amount" style="color: var(--gold); font-size: 1.5rem;">120€</div>
-            ${!enJuego ? `<img src="${oro.logo}" class="escudo-podio" onerror="this.style.display='none'">` : ''}
+            ${!enJuego && oro ? `<img src="${oro.logo}" class="escudo-podio" onerror="this.style.display='none'">` : ''}
             <div class="nombre">👑<br>${enJuego ? 'En juego' : oro.nombre}</div>
             <div class="tag-medal">1º</div>
         </div>
         <div class="escalon bronce">
             <div class="prize-amount" style="color: #cd7f32;">0€</div>
-            ${!enJuego ? `<img src="${bronce.logo}" class="escudo-podio" onerror="this.style.display='none'">` : ''}
-            <div class="nombre">${enJuego ? 'En juego' : bronce.nombre}</div>
+            ${!enJuego && bronce ? `<img src="${bronce.logo}" class="escudo-podio" onerror="this.style.display='none'">` : ''}
+            <div class="nombre">${enJuego ? 'En juego' : (bronce ? bronce.nombre : '---')}</div>
             <div class="tag-medal">3º</div>
         </div>
     `;
@@ -391,48 +369,37 @@ function renderizarPodio(oro, plata, bronce) {
 
 function calcularPremios(jugadores) {
     const contenedor = document.getElementById("contenedor-premios");
+    
+    // BLINDAJE: Evita crashear el "Farolillo Rojo" si la lista está vacía
+    if (!jugadores || jugadores.length === 0) {
+        contenedor.innerHTML = `
+            <div class="premio-card"><h3>🚀 El Bombazo</h3><p>---</p><small>Sin datos</small></div>
+            <div class="premio-card vip-card"><h3>🏆 Campeón General</h3><p>---</p><small>Sin datos</small></div>
+            <div class="premio-card" style="border-top-color: #ffaa00;"><h3>🍋 Premio Limón</h3><p>---</p><small>Sin datos</small></div>
+            <div class="premio-card" style="border-top-color: #888;"><h3>🏮 Farolillo Rojo</h3><p>---</p><small>Sin datos</small></div>
+        `;
+        return;
+    }
+
     const liderGeneral = jugadores[0]; 
     let farolillo = jugadores.reduce((prev, current) => (prev.seed > current.seed) ? prev : current);
 
     let bombazo = { nombre: "---", puntos: 0, jornada: "" };
     let limon = { nombre: "---", puntos: 9999, jornada: "" };
-
     const fases = ['ptsDieciseisavos', 'ptsOctavos', 'ptsCuartos', 'ptsSemis', 'ptsFinal'];
     const nombresFases = ['Dieciseisavos', 'Octavos', 'Cuartos', 'Semis', 'Final'];
 
     jugadores.forEach(j => {
         fases.forEach((fase, idx) => {
-            if (j[fase] > bombazo.puntos) {
-                bombazo = { nombre: j.nombre, puntos: j[fase], jornada: nombresFases[idx] };
-            }
-            if (j[fase] > 0 && j[fase] < limon.puntos) {
-                limon = { nombre: j.nombre, puntos: j[fase], jornada: nombresFases[idx] };
-            }
+            if (j[fase] > bombazo.puntos) bombazo = { nombre: j.nombre, puntos: j[fase], jornada: nombresFases[idx] };
+            if (j[fase] > 0 && j[fase] < limon.puntos) limon = { nombre: j.nombre, puntos: j[fase], jornada: nombresFases[idx] };
         });
     });
 
     contenedor.innerHTML = `
-        <div class="premio-card">
-            <h3>🚀 El Bombazo</h3>
-            <p>${bombazo.puntos > 0 ? bombazo.nombre : '---'}</p>
-            <small>${bombazo.puntos > 0 ? bombazo.puntos + ' pts en ' + bombazo.jornada : 'Sin datos aún'}</small>
-        </div>
-        <div class="premio-card vip-card">
-            <h3>🏆 Campeón General</h3>
-            <p>${liderGeneral.nombre}</p>
-            <small>Líder Absoluto (${liderGeneral.ptsTotales} pts)</small>
-        </div>
-        <div class="premio-card" style="border-top-color: #ffaa00;">
-            <h3>🍋 Premio Limón</h3>
-            <p>${limon.puntos < 9999 ? limon.nombre : '---'}</p>
-            <small>${limon.puntos < 9999 ? limon.puntos + ' pts en ' + limon.jornada : 'Sin datos aún'}</small>
-        </div>
-        <div class="premio-card" style="border-top-color: #888;">
-            <h3>🏮 Farolillo Rojo</h3>
-            <p>${farolillo.nombre}</p>
-            <small>Último en Liguilla (${farolillo.ptsLiguilla} pts)</small>
-        </div>
+        <div class="premio-card"><h3>🚀 El Bombazo</h3><p>${bombazo.puntos > 0 ? bombazo.nombre : '---'}</p><small>${bombazo.puntos > 0 ? bombazo.puntos + ' pts en ' + bombazo.jornada : 'Sin datos aún'}</small></div>
+        <div class="premio-card vip-card"><h3>🏆 Campeón General</h3><p>${liderGeneral.nombre}</p><small>Líder Absoluto (${liderGeneral.ptsTotales} pts)</small></div>
+        <div class="premio-card" style="border-top-color: #ffaa00;"><h3>🍋 Premio Limón</h3><p>${limon.puntos < 9999 ? limon.nombre : '---'}</p><small>${limon.puntos < 9999 ? limon.puntos + ' pts en ' + limon.jornada : 'Sin datos aún'}</small></div>
+        <div class="premio-card" style="border-top-color: #888;"><h3>🏮 Farolillo Rojo</h3><p>${farolillo.nombre}</p><small>Último en Liguilla (${farolillo.ptsLiguilla} pts)</small></div>
     `;
 }
-
-
