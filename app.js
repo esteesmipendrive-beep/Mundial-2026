@@ -1,3 +1,4 @@
+// ENLACE CORRECTO Y BLINDADO (NO TOCAR)
 const URL_SHEET = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSY9OP3N3MoehCAKTfU83Z__5Ecu0GAukFgCKk1ZYB5hQQxwwK1j9DdlK_64KByH432zf48yc0jGBvI/pub?output=csv";
 const FALLBACK_IMG = "https://via.placeholder.com/60/2a2a2a/00ff88?text=FC";
 
@@ -17,7 +18,9 @@ async function obtenerDatosMundial() {
         renderizarClasificacion(jugadores);
         
         const clasificadosTorneo = jugadores.filter(j => j.seed <= 8).sort((a, b) => a.seed - b.seed);
-        renderizarTorneo(clasificadosTorneo); 
+        // ENVIAMOS AL LÍDER GENERAL AL TORNEO PARA DIBUJARLO EN EL PODIO
+        renderizarTorneo(clasificadosTorneo, jugadores[0]); 
+        
         calcularPremios(jugadores);
         
     } catch (error) {
@@ -37,7 +40,6 @@ function parsearCSV(texto) {
         const col = linea.split(",");
         const nombreStr = col[0]?.replace(/"/g, '').trim();
         
-        // BLINDAJE: Si la fila no tiene nombre o lee HTML, la ignora
         if (!nombreStr || nombreStr === "" || nombreStr.includes("<html")) continue;
 
         const ptsLiguilla = parseInt(col[2]) || 0;
@@ -221,10 +223,9 @@ function obtenerGanadorUnico(jugadorA, jugadorB, columna) {
     return null;
 }
 
-function renderizarTorneo(top8_original) {
+function renderizarTorneo(top8_original, liderGeneral) {
     const contenedor = document.getElementById("contenedor-torneo");
     
-    // BLINDAJE: Rellena con vacíos para dibujar el cuadro aunque el Excel esté vacío
     let top8 = [...(top8_original || [])];
     while (top8.length < 8) top8.push(null); 
 
@@ -244,6 +245,8 @@ function renderizarTorneo(top8_original) {
 
     const campeon = obtenerGanadorUnico(final_A, final_B, 'ptsFinal');
     const subcampeon = campeon ? (campeon.nombre === final_A?.nombre ? final_B : final_A) : null;
+    
+    // Seguimos calculando el tercero para dibujar su partido
     const tercero = obtenerGanadorUnico(perdedorSemi1, perdedorSemi2, 'ptsTercero');
 
     contenedor.innerHTML = `
@@ -291,7 +294,8 @@ function renderizarTorneo(top8_original) {
         </div>
     `;
 
-    renderizarPodio(campeon, subcampeon, tercero);
+    // AQUI INYECTAMOS AL LÍDER EN LUGAR DEL TERCERO
+    renderizarPodio(campeon, subcampeon, liderGeneral);
 }
 
 function generarHtmlEncuentro(jugadorA, jugadorB, colIda, colVuelta) {
@@ -340,28 +344,34 @@ function generarHtmlFinal(jugadorA, jugadorB, columna, isFinal) {
     </div>`;
 }
 
-function renderizarPodio(oro, plata, bronce) {
+function renderizarPodio(oro, plata, lider) {
     const contenedor = document.getElementById("podio-final");
-    const enJuego = !oro || oro.nombre === "Esperando";
+    
+    // Verificamos si el torneo finalizó
+    const enJuegoTorneo = !oro || oro.nombre === "Esperando";
+    // Verificamos si hay algún líder (incluso en la jornada 1 habrá uno)
+    const liderValido = lider && lider.nombre && lider.nombre !== "---";
     
     contenedor.innerHTML = `
         <div class="escalon plata">
             <div class="prize-amount">10€</div>
-            ${!enJuego && plata ? `<img src="${plata.logo}" class="escudo-podio" onerror="this.style.display='none'">` : ''}
-            <div class="nombre">${enJuego ? 'En juego' : (plata ? plata.nombre : '---')}</div>
-            <div class="tag-medal">2º</div>
+            ${!enJuegoTorneo && plata ? `<img src="${plata.logo}" class="escudo-podio" onerror="this.style.display='none'">` : ''}
+            <div class="nombre">${enJuegoTorneo ? 'En juego' : (plata ? plata.nombre : '---')}</div>
+            <div class="tag-medal">2º Torneo</div>
         </div>
+        
         <div class="escalon oro">
             <div class="prize-amount" style="color: var(--gold); font-size: 1.5rem;">120€</div>
-            ${!enJuego && oro ? `<img src="${oro.logo}" class="escudo-podio" onerror="this.style.display='none'">` : ''}
-            <div class="nombre">👑<br>${enJuego ? 'En juego' : oro.nombre}</div>
-            <div class="tag-medal">1º</div>
+            ${!enJuegoTorneo && oro ? `<img src="${oro.logo}" class="escudo-podio" onerror="this.style.display='none'">` : ''}
+            <div class="nombre">👑<br>${enJuegoTorneo ? 'En juego' : oro.nombre}</div>
+            <div class="tag-medal">1º Torneo</div>
         </div>
-        <div class="escalon bronce">
-            <div class="prize-amount" style="color: #cd7f32;">0€</div>
-            ${!enJuego && bronce ? `<img src="${bronce.logo}" class="escudo-podio" onerror="this.style.display='none'">` : ''}
-            <div class="nombre">${enJuego ? 'En juego' : (bronce ? bronce.nombre : '---')}</div>
-            <div class="tag-medal">3º</div>
+
+        <div class="escalon" style="height: 160px; background: linear-gradient(135deg, #00e5ff, #007bb5); box-shadow: 0 -5px 20px rgba(0, 229, 255, 0.3); z-index: 1;">
+            <div class="prize-amount" style="color: #ffffff; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">10€</div>
+            ${liderValido ? `<img src="${lider.logo}" class="escudo-podio" style="border-color: #00e5ff;" onerror="this.style.display='none'">` : ''}
+            <div class="nombre" style="font-size: 1rem;">${liderValido ? lider.nombre : 'En juego'}</div>
+            <div class="tag-medal" style="background: rgba(0,0,0,0.4);">Líder General</div>
         </div>
     `;
 }
@@ -369,7 +379,6 @@ function renderizarPodio(oro, plata, bronce) {
 function calcularPremios(jugadores) {
     const contenedor = document.getElementById("contenedor-premios");
     
-    // BLINDAJE: Evita crashear el "Farolillo Rojo" si la lista está vacía
     if (!jugadores || jugadores.length === 0) {
         contenedor.innerHTML = `
             <div class="premio-card"><h3>🚀 El Bombazo</h3><p>---</p><small>Sin datos</small></div>
@@ -402,6 +411,3 @@ function calcularPremios(jugadores) {
         <div class="premio-card" style="border-top-color: #888;"><h3>🏮 Farolillo Rojo</h3><p>${farolillo.nombre}</p><small>Último en Liguilla (${farolillo.ptsLiguilla} pts)</small></div>
     `;
 }
-
-
-
