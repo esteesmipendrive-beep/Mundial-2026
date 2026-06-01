@@ -23,7 +23,7 @@ async function obtenerDatosMundial() {
         
     } catch (error) {
         console.error(error);
-        document.getElementById("cuerpo-tabla").innerHTML = `<tr><td colspan="5" style="color:red; text-align:center;">Error de Base de Datos.</td></tr>`;
+        document.getElementById("cuerpo-tabla").innerHTML = `<tr><td colspan="5" style="color:red; text-align:center;">Error de Base de Datos. Revisa tu Excel.</td></tr>`;
     }
 }
 
@@ -202,7 +202,6 @@ function renderizarClasificacion(jugadores) {
     });
 }
 
-// MOTOR LÓGICO Y MATEMÁTICO DE CRUCES
 function obtenerGanadorDoble(jugadorA, jugadorB, colIda, colVuelta) {
     if (!jugadorA || !jugadorB) return { nombre: "---", ptsMostrados: 0, logo: FALLBACK_IMG };
     const totalA = jugadorA[colIda] + jugadorA[colVuelta];
@@ -217,18 +216,15 @@ function obtenerGanadorDoble(jugadorA, jugadorB, colIda, colVuelta) {
     return { nombre: "Esperando", ptsMostrados: 0, logo: FALLBACK_IMG };
 }
 
-// NUEVA FUNCIÓN RIGUROSA PARA EXTRAER AL PERDEDOR (Para el 3º Puesto)
 function obtenerPerdedorDoble(jugadorA, jugadorB, colIda, colVuelta) {
     if (!jugadorA || !jugadorB || jugadorA.nombre === "---" || jugadorB.nombre === "---") return { nombre: "Esperando", ptsMostrados: 0, logo: FALLBACK_IMG };
     const totalA = jugadorA[colIda] + jugadorA[colVuelta];
     const totalB = jugadorB[colIda] + jugadorB[colVuelta];
-    
     if (totalA === 0 && totalB === 0) return { nombre: "Esperando", ptsMostrados: 0, logo: FALLBACK_IMG };
     
     let ganaA = totalA > totalB || (totalA === totalB && totalA > 0 && jugadorA.seed < jugadorB.seed);
     let ganaB = totalB > totalA || (totalA === totalB && totalB > 0 && jugadorB.seed < jugadorA.seed);
 
-    // Si hay un ganador, devolvemos al otro jugador
     if (ganaA) return jugadorB;
     if (ganaB) return jugadorA;
     return { nombre: "Esperando", ptsMostrados: 0, logo: FALLBACK_IMG };
@@ -248,37 +244,30 @@ function obtenerGanadorUnico(jugadorA, jugadorB, columna) {
     return { nombre: "Esperando", ptsMostrados: 0, logo: FALLBACK_IMG };
 }
 
-
 function renderizarTorneo(top8) {
     const contenedor = document.getElementById("contenedor-torneo");
     if (top8.length < 8) return;
 
-    // Fase de Cuartos
     const q1_A = top8[0], q1_B = top8[7], q2_A = top8[3], q2_B = top8[4];
     const q3_A = top8[1], q3_B = top8[6], q4_A = top8[2], q4_B = top8[5];
 
-    // Ganadores de Cuartos = Participantes de Semifinales
     const semi1_A = obtenerGanadorDoble(q1_A, q1_B, 'ptsDieciseisavos', 'ptsOctavos');
     const semi1_B = obtenerGanadorDoble(q2_A, q2_B, 'ptsDieciseisavos', 'ptsOctavos');
     const semi2_A = obtenerGanadorDoble(q3_A, q3_B, 'ptsDieciseisavos', 'ptsOctavos');
     const semi2_B = obtenerGanadorDoble(q4_A, q4_B, 'ptsDieciseisavos', 'ptsOctavos');
 
-    // EXTRACCIÓN CORREGIDA: Evaluamos quién pierde en Semis
     const perdedorSemi1 = obtenerPerdedorDoble(semi1_A, semi1_B, 'ptsCuartos', 'ptsSemis');
     const perdedorSemi2 = obtenerPerdedorDoble(semi2_A, semi2_B, 'ptsCuartos', 'ptsSemis');
 
-    // Ganadores de Semis = Participantes de la Gran Final
     const final_A = obtenerGanadorDoble(semi1_A, semi1_B, 'ptsCuartos', 'ptsSemis');
     const final_B = obtenerGanadorDoble(semi2_A, semi2_B, 'ptsCuartos', 'ptsSemis');
 
-    // Resoluciones Finales
     const campeon = obtenerGanadorUnico(final_A, final_B, 'ptsFinal');
     const subcampeon = campeon.nombre === final_A.nombre ? final_B : (campeon.nombre === final_B.nombre ? final_A : {nombre: "---", logo: FALLBACK_IMG});
     const tercero = obtenerGanadorUnico(perdedorSemi1, perdedorSemi2, 'ptsTercero');
 
     contenedor.innerHTML = `
         <div class="bracket-symmetrical">
-            
             <div class="bracket-col round-qf-left">
                 <div class="round-header">CUARTOS</div>
                 <div class="col-content">
@@ -289,28 +278,26 @@ function renderizarTorneo(top8) {
 
             <div class="bracket-col round-sf-left">
                 <div class="round-header">SEMIFINALES</div>
-                <div class="col-content">
+                <div class="col-content sf-content">
                     ${generarHtmlEncuentro(semi1_A, semi1_B, 'ptsCuartos', 'ptsSemis')}
                 </div>
             </div>
 
             <div class="bracket-col round-final">
                 <div class="round-header" style="background:var(--gold); color:white;">FINAL</div>
-                <div class="col-content final-col-content">
-                    
+                <div class="col-content final-content">
                     ${generarHtmlFinal(final_A, final_B, 'ptsFinal', true)}
-                    
-                    <div class="tercer-puesto-wrapper" style="display:flex; flex-direction:column; align-items:center; gap:8px; margin-top:2rem;">
-                        ${generarHtmlFinal(perdedorSemi1, perdedorSemi2, 'ptsTercero', false)}
-                        <div class="round-header" style="background:#cd7f32; color:white; position:relative; top:0; transform:none; padding:0.3rem 1.2rem;">3º PUESTO</div>
-                    </div>
-
+                </div>
+                
+                <div class="tercer-puesto-wrapper">
+                    <div class="round-header badge-tercero">3º PUESTO</div>
+                    ${generarHtmlFinal(perdedorSemi1, perdedorSemi2, 'ptsTercero', false)}
                 </div>
             </div>
 
             <div class="bracket-col round-sf-right">
                 <div class="round-header">SEMIFINALES</div>
-                <div class="col-content">
+                <div class="col-content sf-content">
                     ${generarHtmlEncuentro(semi2_A, semi2_B, 'ptsCuartos', 'ptsSemis')}
                 </div>
             </div>
@@ -322,10 +309,10 @@ function renderizarTorneo(top8) {
                     ${generarHtmlEncuentro(q4_A, q4_B, 'ptsDieciseisavos', 'ptsOctavos')}
                 </div>
             </div>
-
         </div>
     `;
 
+    // AÑADIDO: Renderizado de premios en el podio
     renderizarPodio(campeon, subcampeon, tercero);
 }
 
@@ -334,7 +321,6 @@ function generarHtmlEncuentro(jugadorA, jugadorB, colIda, colVuelta) {
     const totA = jugadorA[colIda] + jugadorA[colVuelta];
     const totB = jugadorB[colIda] + jugadorB[colVuelta];
     
-    // Evita falsos ganadores cuando el partido no se ha jugado
     let ganaA = (totA > 0 || totB > 0) && (totA > totB || (totA === totB && jugadorA.seed < jugadorB.seed));
     let ganaB = (totA > 0 || totB > 0) && (totB > totA || (totA === totB && jugadorB.seed < jugadorA.seed));
 
@@ -384,22 +370,26 @@ function generarHtmlFinal(jugadorA, jugadorB, columna, isFinal) {
     </div>`;
 }
 
+// AQUÍ ESTÁN INYECTADOS LOS BILLETES DE PREMIO ENCIMA DEL PODIO
 function renderizarPodio(oro, plata, bronce) {
     const contenedor = document.getElementById("podio-final");
     const enJuego = oro.nombre === "---" || oro.nombre === "Esperando";
     
     contenedor.innerHTML = `
         <div class="escalon plata">
+            <div class="prize-amount">10€</div>
             ${!enJuego ? `<img src="${plata.logo}" class="escudo-podio" onerror="this.style.display='none'">` : ''}
             <div class="nombre">${enJuego ? 'En juego' : plata.nombre}</div>
             <div class="tag-medal">2º</div>
         </div>
         <div class="escalon oro">
+            <div class="prize-amount" style="color: var(--gold); font-size: 1.5rem;">120€</div>
             ${!enJuego ? `<img src="${oro.logo}" class="escudo-podio" onerror="this.style.display='none'">` : ''}
             <div class="nombre">👑<br>${enJuego ? 'En juego' : oro.nombre}</div>
             <div class="tag-medal">1º</div>
         </div>
         <div class="escalon bronce">
+            <div class="prize-amount" style="color: transparent;">-</div>
             ${!enJuego ? `<img src="${bronce.logo}" class="escudo-podio" onerror="this.style.display='none'">` : ''}
             <div class="nombre">${enJuego ? 'En juego' : bronce.nombre}</div>
             <div class="tag-medal">3º</div>
