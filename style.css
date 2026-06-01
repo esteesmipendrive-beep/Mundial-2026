@@ -1,6 +1,5 @@
-/* =========================================
-   VARIABLES Y ESTÉTICA (FIFA 2026 / FANTASY)
-   ========================================= */
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700;900&display=swap');
+
 :root {
     --bg-card: #ffffff;
     --text-main: #111111;
@@ -16,39 +15,22 @@
 }
 
 body::before {
-    content: '';
-    position: fixed;
-    top: 0; left: 0; width: 100vw; height: 100vh;
+    content: ''; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
     background: radial-gradient(circle at 10% 20%, rgba(255, 0, 85, 0.03), transparent 40%),
                 radial-gradient(circle at 90% 80%, rgba(0, 255, 136, 0.04), transparent 40%),
                 radial-gradient(circle at 50% 50%, rgba(75, 8, 161, 0.03), transparent 50%);
-    z-index: -1;
-    background-color: #f7f9fc;
+    z-index: -1; background-color: #f7f9fc;
 }
 
-body {
-    font-family: 'Outfit', sans-serif;
-    color: var(--text-main);
-    margin: 0;
-    padding: 0;
-    -webkit-font-smoothing: antialiased;
-}
+body { font-family: 'Outfit', sans-serif; color: var(--text-main); margin: 0; padding: 0; -webkit-font-smoothing: antialiased; }
 
 header {
     background: linear-gradient(120deg, var(--fifa-purple), var(--fifa-magenta), #2a0066, var(--fifa-cyan));
-    background-size: 300% 300%;
-    animation: gradientMove 12s ease infinite;
-    color: white;
-    padding: 3.5rem 1rem 2rem 1rem;
-    text-align: center;
-    box-shadow: 0 10px 20px rgba(75, 8, 161, 0.2);
+    background-size: 300% 300%; animation: gradientMove 12s ease infinite; color: white;
+    padding: 3.5rem 1rem 2rem 1rem; text-align: center; box-shadow: 0 10px 20px rgba(75, 8, 161, 0.2);
 }
 
-@keyframes gradientMove {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-}
+@keyframes gradientMove { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
 
 .logo-oficial { max-width: 250px; height: auto; margin-bottom: 0.5rem; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5)); transition: transform 0.3s ease; }
 .logo-oficial:hover { transform: scale(1.05); }
@@ -78,89 +60,29 @@ tr td:last-child { border-right: 1px solid var(--border-soft); border-radius: 0 
 .team-info { display: flex; align-items: center; gap: 12px; }
 .escudo-tabla { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; border: 3px solid white; background: white; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
 
-/* =========================================
-   ÁRBOL DEL TORNEO LÍQUIDO (ANTI-SCROLL)
-   ========================================= */
-.bracket-symmetrical {
-    display: grid;
-    grid-template-columns: repeat(5, minmax(0, 1fr));
-    gap: 0;
-    width: 100%;
-    padding: 2rem 0;
-}
-
-.bracket-col {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    padding: 0 12px; 
-    min-height: 420px; 
-}
-
-.round-header {
-    position: absolute;
-    top: -30px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: rgba(75, 8, 161, 0.1);
-    color: var(--fifa-purple);
-    font-weight: 900;
-    padding: 0.4rem 1rem;
-    border-radius: 20px;
-    font-size: 0.75rem;
-    letter-spacing: 1px;
-    white-space: nowrap;
-}
-
+/* ÁRBOL SIMÉTRICO Y LÍNEAS */
+.bracket-symmetrical { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 0; width: 100%; padding: 2rem 0; }
+.bracket-col { position: relative; display: flex; flex-direction: column; padding: 0 12px; min-height: 420px; }
+.round-header { position: absolute; top: -30px; left: 50%; transform: translateX(-50%); background: rgba(75, 8, 161, 0.1); color: var(--fifa-purple); font-weight: 900; padding: 0.4rem 1rem; border-radius: 20px; font-size: 0.75rem; letter-spacing: 1px; white-space: nowrap; }
 .col-content { position: relative; display: flex; flex-direction: column; justify-content: space-around; height: 100%; width: 100%; }
 .sf-content { justify-content: center; } 
 .final-content { justify-content: center; } 
 
-.round-final {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.tercer-puesto-wrapper {
-    position: absolute;
-    bottom: 10px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: calc(100% - 24px);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.header-tercero {
-    background: #cd7f32;
-    color: white;
-    font-weight: 900;
-    padding: 0.3rem 1.2rem;
-    border-radius: 20px;
-    font-size: 0.75rem;
-    letter-spacing: 1px;
-    white-space: nowrap;
-    margin-top: 8px;
-    box-shadow: 0 4px 10px rgba(205, 127, 50, 0.3);
-}
+.round-final { display: flex; flex-direction: column; justify-content: space-between; align-items: center; }
+.tercer-puesto-wrapper { position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); width: calc(100% - 24px); display: flex; flex-direction: column; align-items: center; }
+.header-tercero { background: #cd7f32; color: white; font-weight: 900; padding: 0.3rem 1.2rem; border-radius: 20px; font-size: 0.75rem; letter-spacing: 1px; white-space: nowrap; margin-top: 8px; box-shadow: 0 4px 10px rgba(205, 127, 50, 0.3); }
 
 .matchup-container { width: 100%; background: white; border: 1px solid var(--border-soft); border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.06); position: relative; z-index: 2; }
-
 .team-row { display: flex; justify-content: space-between; align-items: center; padding: 0.4rem 0.6rem; border-bottom: 1px solid var(--border-soft); }
 .team-row:first-child { border-radius: 8px 8px 0 0; }
 .team-row:last-child { border-bottom: none; border-radius: 0 0 8px 8px; }
 .team-row.winner { background: rgba(0, 255, 136, 0.12); font-weight: 900; }
 .team-row.eliminated { filter: grayscale(100%); opacity: 0.6; }
-
 .team-name-badge { display: flex; align-items: center; gap: 6px; overflow: hidden; }
 .t-name-label { font-size: 0.8rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .escudo-bracket { width: 22px; height: 22px; border-radius: 50%; object-fit: cover; border: 1px solid var(--border-soft); }
 .points-badge { font-weight: 900; color: var(--fifa-purple); font-size: 0.95rem; }
 
-/* LÍNEAS VECTORIALES */
 .round-qf-left .matchup-container::after { content:''; position:absolute; right:-12px; top:50%; width:12px; border-top:var(--line-width) solid var(--line-color); z-index:0; }
 .round-sf-left .col-content::before { content:''; position:absolute; left:-12px; top:25%; bottom:25%; border-left:var(--line-width) solid var(--line-color); z-index:0; }
 .round-sf-left .matchup-container::before { content:''; position:absolute; left:-12px; top:50%; width:12px; border-top:var(--line-width) solid var(--line-color); z-index:0; }
@@ -174,15 +96,12 @@ tr td:last-child { border-right: 1px solid var(--border-soft); border-radius: 0 
 .round-final .final-matchup::before { content:''; position:absolute; left:-12px; top:50%; width:12px; border-top:var(--line-width) solid var(--line-color); z-index:0; }
 .round-final .final-matchup::after { content:''; position:absolute; right:-12px; top:50%; width:12px; border-top:var(--line-width) solid var(--line-color); z-index:0; }
 
-/* =========================================
-   PODIO Y PREMIOS
-   ========================================= */
+/* PODIO Y PREMIOS */
 .podio-container { display: flex; justify-content: center; align-items: flex-end; gap: 1.5rem; height: 320px; margin-top: 3rem; padding-bottom: 1rem; border-bottom: 2px solid var(--border-soft); }
 .escalon { display: flex; flex-direction: column; justify-content: flex-end; align-items: center; color: white; border-radius: 16px 16px 0 0; text-align: center; padding: 1.5rem 1rem; width: 140px; position: relative; transition: transform 0.3s ease; }
 .escalon:hover { transform: translateY(-15px); }
 .escalon .nombre { font-size: 1.2rem; font-weight: 900; margin-bottom: 0.5rem; text-shadow: 0 2px 5px rgba(0,0,0,0.4); }
 .tag-medal { background: rgba(0,0,0,0.3); padding: 0.2rem 1rem; border-radius: 20px; font-size: 0.9rem; font-weight: bold; }
-
 .prize-amount { font-weight: 900; font-size: 1.2rem; margin-bottom: 10px; text-shadow: 0 2px 5px rgba(0,0,0,0.6); }
 
 .oro { height: 260px; background: linear-gradient(135deg, #FFDF00, #D4AF37, #B8860B); box-shadow: 0 0 30px rgba(255, 215, 0, 0.6), inset 0 5px 15px rgba(255,255,255,0.6); z-index: 3; }
