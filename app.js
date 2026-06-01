@@ -23,7 +23,7 @@ async function obtenerDatosMundial() {
         
     } catch (error) {
         console.error(error);
-        document.getElementById("cuerpo-tabla").innerHTML = `<tr><td colspan="5" style="color:red; text-align:center;">Error de Base de Datos.</td></tr>`;
+        document.getElementById("cuerpo-tabla").innerHTML = `<tr><td colspan="5" style="color:red; text-align:center;">Error de Base de Datos. Revisa tu Excel.</td></tr>`;
     }
 }
 
@@ -160,10 +160,46 @@ function asignarEstadosLogicos(jugadores) {
     }
 }
 
-function marcarEstado(j, texto, color, fondo) {
-    j.estadoStr = texto;
-    j.estadoColor = color;
-    j.estadoBg = fondo;
+function obtenerGanadorDoble(jugadorA, jugadorB, colIda, colVuelta) {
+    if (!jugadorA || !jugadorB) return { nombre: "---", ptsMostrados: 0, logo: FALLBACK_IMG };
+    const totalA = jugadorA[colIda] + jugadorA[colVuelta];
+    const totalB = jugadorB[colIda] + jugadorB[colVuelta];
+    if (totalA === 0 && totalB === 0) return { nombre: "Esperando", ptsMostrados: 0, logo: FALLBACK_IMG };
+    
+    let ganaA = totalA > totalB || (totalA === totalB && totalA > 0 && jugadorA.seed < jugadorB.seed);
+    let ganaB = totalB > totalA || (totalA === totalB && totalB > 0 && jugadorB.seed < jugadorA.seed);
+
+    if (ganaA) return { ...jugadorA, ptsMostrados: totalA };
+    if (ganaB) return { ...jugadorB, ptsMostrados: totalB };
+    return { nombre: "Esperando", ptsMostrados: 0, logo: FALLBACK_IMG };
+}
+
+function obtenerPerdedorDoble(jugadorA, jugadorB, colIda, colVuelta) {
+    if (!jugadorA || !jugadorB || jugadorA.nombre === "---" || jugadorB.nombre === "---" || jugadorA.nombre === "Esperando" || jugadorB.nombre === "Esperando") return { nombre: "Esperando", ptsMostrados: 0, logo: FALLBACK_IMG };
+    const totalA = jugadorA[colIda] + jugadorA[colVuelta];
+    const totalB = jugadorB[colIda] + jugadorB[colVuelta];
+    if (totalA === 0 && totalB === 0) return { nombre: "Esperando", ptsMostrados: 0, logo: FALLBACK_IMG };
+    
+    let ganaA = totalA > totalB || (totalA === totalB && totalA > 0 && jugadorA.seed < jugadorB.seed);
+    let ganaB = totalB > totalA || (totalA === totalB && totalB > 0 && jugadorB.seed < jugadorA.seed);
+
+    if (ganaA) return jugadorB;
+    if (ganaB) return jugadorA;
+    return { nombre: "Esperando", ptsMostrados: 0, logo: FALLBACK_IMG };
+}
+
+function obtenerGanadorUnico(jugadorA, jugadorB, columna) {
+    if (!jugadorA || !jugadorB) return { nombre: "---", ptsMostrados: 0, logo: FALLBACK_IMG };
+    const ptsA = jugadorA[columna];
+    const ptsB = jugadorB[columna];
+    if (ptsA === 0 && ptsB === 0) return { nombre: "Esperando", ptsMostrados: 0, logo: FALLBACK_IMG };
+    
+    let ganaA = ptsA > ptsB || (ptsA === ptsB && ptsA > 0 && jugadorA.seed < jugadorB.seed);
+    let ganaB = ptsB > ptsA || (ptsA === ptsB && ptsB > 0 && jugadorB.seed < jugadorA.seed);
+
+    if (ganaA) return { ...jugadorA, ptsMostrados: ptsA };
+    if (ganaB) return { ...jugadorB, ptsMostrados: ptsB };
+    return { nombre: "Esperando", ptsMostrados: 0, logo: FALLBACK_IMG };
 }
 
 function renderizarClasificacion(jugadores) {
@@ -200,48 +236,6 @@ function renderizarClasificacion(jugadores) {
         `;
         tbody.appendChild(tr);
     });
-}
-
-function obtenerGanadorDoble(jugadorA, jugadorB, colIda, colVuelta) {
-    if (!jugadorA || !jugadorB) return { nombre: "---", ptsMostrados: 0, logo: FALLBACK_IMG };
-    const totalA = jugadorA[colIda] + jugadorA[colVuelta];
-    const totalB = jugadorB[colIda] + jugadorB[colVuelta];
-    if (totalA === 0 && totalB === 0) return { nombre: "Esperando", ptsMostrados: 0, logo: FALLBACK_IMG };
-    
-    let ganaA = totalA > totalB || (totalA === totalB && totalA > 0 && jugadorA.seed < jugadorB.seed);
-    let ganaB = totalB > totalA || (totalA === totalB && totalB > 0 && jugadorB.seed < jugadorA.seed);
-
-    if (ganaA) return { ...jugadorA, ptsMostrados: totalA };
-    if (ganaB) return { ...jugadorB, ptsMostrados: totalB };
-    return { nombre: "Esperando", ptsMostrados: 0, logo: FALLBACK_IMG };
-}
-
-function obtenerPerdedorDoble(jugadorA, jugadorB, colIda, colVuelta) {
-    if (!jugadorA || !jugadorB || jugadorA.nombre === "---" || jugadorB.nombre === "---") return { nombre: "Esperando", ptsMostrados: 0, logo: FALLBACK_IMG };
-    const totalA = jugadorA[colIda] + jugadorA[colVuelta];
-    const totalB = jugadorB[colIda] + jugadorB[colVuelta];
-    if (totalA === 0 && totalB === 0) return { nombre: "Esperando", ptsMostrados: 0, logo: FALLBACK_IMG };
-    
-    let ganaA = totalA > totalB || (totalA === totalB && totalA > 0 && jugadorA.seed < jugadorB.seed);
-    let ganaB = totalB > totalA || (totalA === totalB && totalB > 0 && jugadorB.seed < jugadorA.seed);
-
-    if (ganaA) return jugadorB;
-    if (ganaB) return jugadorA;
-    return { nombre: "Esperando", ptsMostrados: 0, logo: FALLBACK_IMG };
-}
-
-function obtenerGanadorUnico(jugadorA, jugadorB, columna) {
-    if (!jugadorA || !jugadorB) return { nombre: "---", ptsMostrados: 0, logo: FALLBACK_IMG };
-    const ptsA = jugadorA[columna];
-    const ptsB = jugadorB[columna];
-    if (ptsA === 0 && ptsB === 0) return { nombre: "Esperando", ptsMostrados: 0, logo: FALLBACK_IMG };
-    
-    let ganaA = ptsA > ptsB || (ptsA === ptsB && ptsA > 0 && jugadorA.seed < jugadorB.seed);
-    let ganaB = ptsB > ptsA || (ptsA === ptsB && ptsB > 0 && jugadorB.seed < jugadorA.seed);
-
-    if (ganaA) return { ...jugadorA, ptsMostrados: ptsA };
-    if (ganaB) return { ...jugadorB, ptsMostrados: ptsB };
-    return { nombre: "Esperando", ptsMostrados: 0, logo: FALLBACK_IMG };
 }
 
 function renderizarTorneo(top8) {
