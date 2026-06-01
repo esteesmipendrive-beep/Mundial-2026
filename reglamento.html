@@ -6,6 +6,51 @@
     <title>Reglamento - Fantasy Mundial 2026</title>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+    <style>
+        .regla-card {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.03);
+            border-left: 6px solid var(--fifa-purple);
+            transition: transform 0.2s;
+        }
+        .regla-card:hover { transform: translateY(-3px); }
+        .regla-card h2 { margin: 0 0 1rem 0; border: none; padding: 0; font-size: 1.5rem; }
+        
+        .grid-fases {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        .fase-mini-card {
+            background: #f8fafc;
+            padding: 1rem;
+            border-radius: 12px;
+            border: 1px solid var(--border-soft);
+            text-align: center;
+        }
+        .fase-mini-card strong { color: var(--fifa-purple); font-size: 1.1rem; display: block; }
+        
+        .alert-box {
+            background: rgba(255, 0, 85, 0.06);
+            border: 1px dashed var(--fifa-magenta);
+            padding: 1.2rem;
+            border-radius: 12px;
+            margin-top: 1rem;
+            color: #333;
+        }
+        .highlight-pill {
+            background: var(--fifa-cyan);
+            color: var(--fifa-purple);
+            padding: 0.2rem 0.6rem;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.85rem;
+        }
+    </style>
 </head>
 <body>
     <header>
@@ -19,76 +64,69 @@
         </nav>
     </header>
 
-    <main style="max-width: 900px;">
-        <section>
-            <h2>1. Formato del torneo</h2>
-            <p>Participaremos <strong>14 jugadores</strong>. El torneo tendrá dos fases:</p>
+    <main style="max-width: 900px; margin-top: 2rem;">
+        
+        <div class="regla-card">
+            <h2>⚽ 1. Formato del Torneo</h2>
+            <p>Participaremos un grupo cerrado de <strong>14 jugadores</strong>. La arquitectura consta de dos etapas competitivas paralelas para asegurar la diversión continua de todos los mánagers:</p>
+            <div class="grid-fases">
+                <div class="fase-mini-card">
+                    <strong>Etapa 1: Liguilla</strong>
+                    <small>Durante toda la fase de grupos real.</small>
+                </div>
+                <div class="fase-mini-card">
+                    <strong>Etapa 2: Eliminatorias</strong>
+                    <small>Cuadro K.O. desde octavos reales.</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="regla-card" style="border-left-color: var(--fifa-cyan);">
+            <h2>📊 2. Sistema de Computación</h2>
+            <p>Para mitigar el sesgo de un solo cronista, las puntuaciones se calcularán de manera estricta mediante el promedio matemático de dos plataformas de referencia general: <span class="highlight-pill">Media AS</span> + <span class="highlight-pill">Sofascore</span>.</p>
+        </div>
+
+        <div class="regla-card" style="border-left-color: var(--fifa-green);">
+            <h2>🔄 3. Liga General Paralela (Incentivo de Inversión)</h2>
+            <p>Al concluir la fase de grupos, el Top 8 accede al cuadro final. No obstante, la puntuación acumulada no se detiene. Los 14 mánagers continúan sumando unidades jornada tras jornada hasta el último minuto de la final de la Copa del Mundo. Esto garantiza que un mánager eliminado en las primeras de cambio mantenga vivo el incentivo de recuperar su inversión liderando la regularidad absoluta.</p>
+        </div>
+
+        <div class="regla-card">
+            <h2>🏆 4. Fase Eliminatoria (Ida y Vuelta)</h2>
+            <p>Con el fin de mitigar el factor azar de un solo enfrentamiento, las rondas iniciales se disputarán bajo formato de doble partido acumulativo:</p>
             <ul>
-                <li><strong>Fase de liguilla:</strong> Durante la fase de grupos del Mundial.</li>
-                <li><strong>Fase eliminatoria:</strong> A partir de las rondas KO del Mundial.</li>
+                <li><strong>Cuartos de Final:</strong> Ida (16avos reales) + Vuelta (Octavos reales).</li>
+                <li><strong>Semifinales:</strong> Ida (Cuartos reales) + Vuelta (Semifinales reales).</li>
+                <li><strong>Gran Final y 3º Puesto:</strong> Partido único definitivo coincidiendo con los cierres oficiales de la FIFA.</li>
             </ul>
+            <p><small><em>Criterio de Desempate:</em> 1º Puesto de clasificación de Liguilla (Seed) | 2º Mayor puntuación obtenida en el partido de vuelta.</small></p>
+        </div>
 
-            <h2 style="margin-top: 2rem;">2. Sistema de puntuación</h2>
-            <p>La puntuación será mixta: <strong>Media AS + Sofascore</strong>.</p>
+        <div class="regla-card" style="border-left-color: var(--fifa-magenta);">
+            <h2>🚫 5. Presupuestos y Penalizaciones por Selección</h2>
+            <p>La confección de plantillas cuenta con una restricción rigurosa de futbolistas pertenecientes a un mismo país según avancen las jornadas:</p>
+            <div class="grid-fases">
+                <div class="fase-mini-card"><small>Grupos y 16avos</small><strong>Máx 1 Jugador</strong></div>
+                <div class="fase-mini-card"><small>Octavos</small><strong>Máx 2 Jugadores</strong></div>
+                <div class="fase-mini-card"><small>Cuartos</small><strong>Máx 3 Jugadores</strong></div>
+                <div class="fase-mini-card"><small>Semis</small><strong>Máx 5 Jugadores</strong></div>
+            </div>
+            <div class="alert-box">
+                <strong>🚨 Penalización Estricta por Infracción:</strong><br>
+                Cualquier mánager que exceda los límites fijados recibirá una penalización matemática automática de <strong>-4 puntos por cada jugador excedente</strong>. Adicionalmente, el sistema solo computará de forma válida los puntos cosechados por el jugador de menor rendimiento de dicha selección, anulando el resto.
+            </div>
+        </div>
 
-            <h2 style="margin-top: 2rem;">3. Fase de liguilla y General</h2>
-            <p>La fase de grupos del Mundial servirá como liguilla inicial. Todos competirán en una clasificación general. Al finalizar la fase de grupos, los <strong>8 mejores</strong> pasarán a las eliminatorias.</p>
-            
-            <h3 style="color: var(--fifa-purple); margin-top: 1.5rem;">Clasificación General Paralela</h3>
-            <p>Aunque comiencen las eliminatorias, la clasificación general de la liguilla seguirá activa hasta el final del Mundial. Esto implica que:</p>
+        <div class="regla-card" style="border-left-color: var(--gold);">
+            <h2>📱 6. Capitanes (Gestión Externa en WhatsApp)</h2>
+            <p>La selección estratégica de Capitán se mantiene activa para todas las jornadas, pero se gestionará de manera analógica por motivos técnicos:</p>
             <ul>
-                <li>Todos los jugadores (incluso los eliminados) seguirán sumando puntos jornada a jornada.</li>
-                <li>La general acumulada continuará actualizándose hasta la final.</li>
-                <li><strong>Objetivo:</strong> Mantener el interés y la competitividad de todos durante todo el torneo.</li>
+                <li>Deberá notificarse mediante lista de mensajería antes de la hora límite de inicio de la jornada.</li>
+                <li><strong>Puntualidad Absoluta:</strong> Cualquier envío posterior a la hora estipulada invalidará el doble cómputo del capitán de forma irreversible.</li>
+                <li><strong>Límite de Mercado:</strong> Máximo 50M de valor hasta Cuartos; límite ampliado a 80M en Semifinales y Final.</li>
             </ul>
+        </div>
 
-            <h2 style="margin-top: 2rem;">4. Fase eliminatoria</h2>
-            <p>Los cruces iniciales serán: 1º vs 8º | 2º vs 7º | 3º vs 6º | 4º vs 5º.</p>
-            
-            <h3 style="color: var(--fifa-purple); margin-top: 1.5rem;">Cuartos y Semifinales (Ida y Vuelta)</h3>
-            <ul>
-                <li><strong>Nuestros Cuartos:</strong> Dieciseisavos reales (Ida) + Octavos reales (Vuelta).</li>
-                <li><strong>Nuestras Semis:</strong> Cuartos reales (Ida) + Semifinales reales (Vuelta).</li>
-                <li>Pasará quien consiga más puntos sumando ambas jornadas.</li>
-            </ul>
-            <p><em>Desempate:</em> 1. Mejor posición en la liguilla (Seed). 2. Mayor puntuación en la vuelta.</p>
-
-            <h3 style="color: var(--fifa-purple); margin-top: 1.5rem;">Final y Tercer Puesto (Partido Único)</h3>
-            <p>Coincidirán con los partidos reales correspondientes. Ganará quien consiga más puntos en esa jornada única.</p>
-
-            <h2 style="margin-top: 2rem;">5. Presupuestos y Límite Salarial</h2>
-            <ul>
-                <li><strong>Fase de grupos:</strong> 625.000.000 €</li>
-                <li><strong>Dieciseisavos a Semifinales:</strong> TBD €</li>
-                <li><strong>Final:</strong> Sin límite</li>
-            </ul>
-
-            <h2 style="margin-top: 2rem;">6. Sistema de alineación y Cambios</h2>
-            <p>En cada jornada se podrá crear un equipo completamente nuevo con 11 jugadores. Los cambios entre jornadas son ilimitados.</p>
-            <p style="color: var(--fifa-magenta); font-weight: bold;">Importante: Una vez iniciada la jornada no se podrán realizar cambios. No se podrán ver las alineaciones de los demás hasta el inicio.</p>
-
-            <h2 style="margin-top: 2rem;">7. Límite de jugadores por selección</h2>
-            <ul>
-                <li><strong>Fase de grupos y 16avos:</strong> Máximo 1 jugador por selección.</li>
-                <li><strong>Octavos:</strong> Máximo 2 jugadores por selección.</li>
-                <li><strong>Cuartos:</strong> Máximo 3 jugadores por selección.</li>
-                <li><strong>Semifinales:</strong> Máximo 5 jugadores por selección.</li>
-                <li><strong>Final:</strong> Sin límite.</li>
-            </ul>
-            <p><strong>Penalización:</strong> Quien supere el límite recibirá -4 puntos por cada jugador extra. Solo contará la puntuación del jugador de esa selección con menor puntuación.</p>
-
-            <h2 style="margin-top: 2rem;">8. Objetivo del formato</h2>
-            <p>El sistema busca premiar la regularidad en la liguilla, reducir el azar en eliminatorias con ida y vuelta, mantener la emoción durante todo el Mundial y fomentar la estrategia mediante límites de presupuesto y selección.</p>
-
-            <h2 style="margin-top: 2rem; border-bottom: 3px solid var(--gold); padding-bottom: 0.5rem;">9. Capitanes (Gestión Externa)</h2>
-            <p>Para añadir profundidad estratégica, jugaremos con la figura del capitán, pero <strong>este proceso se gestionará manualmente por WhatsApp</strong> y no constará en la tabla automatizada de esta web.</p>
-            <ul>
-                <li><strong>Mecánica:</strong> Antes del inicio de cada jornada habrá que indicar el capitán del equipo mediante una lista en el grupo de WhatsApp.</li>
-                <li><strong>Hora límite:</strong> La jornada inaugural empieza el viernes 14 a las 21:00h. Quien envíe el capitán después de esa hora no recibirá los puntos de capitán en esa jornada.</li>
-                <li><strong>Límites de valor del capitán:</strong> Fase de grupos, dieciseisavos, octavos y cuartos → máximo 50M. Semifinales y final → máximo 80M.</li>
-                <li><strong>Puntuación:</strong> Los puntos del capitán se contabilizarán aparte y se llevará un Excel externo con la suma acumulada tras cada jornada.</li>
-            </ul>
-        </section>
     </main>
 </body>
 </html>
